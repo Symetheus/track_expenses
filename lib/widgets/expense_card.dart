@@ -16,6 +16,7 @@ class ExpenseCard extends StatefulWidget {
   final Expense expense;
   final bool isExpanded;
   final VoidCallback onTap;
+
   /// Appelé après validation — permet au parent d'ouvrir la prochaine dépense.
   final VoidCallback? onValidated;
 
@@ -108,14 +109,8 @@ class _ExpenseCardState extends State<ExpenseCard> {
           onSubmitted: (v) => Navigator.of(ctx).pop(v.trim()),
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('Annuler'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(ctx).pop(controller.text.trim()),
-            child: const Text('Ajouter'),
-          ),
+          TextButton(onPressed: () => Navigator.of(ctx).pop(), child: const Text('Annuler')),
+          FilledButton(onPressed: () => Navigator.of(ctx).pop(controller.text.trim()), child: const Text('Ajouter')),
         ],
       ),
     );
@@ -139,127 +134,136 @@ class _ExpenseCardState extends State<ExpenseCard> {
     return Opacity(
       opacity: expense.isIgnored ? 0.5 : 1.0,
       child: Card(
-      margin: const EdgeInsets.symmetric(horizontal: Dimens.spaceXl, vertical: Dimens.spaceS),
-      elevation: widget.isExpanded ? 3 : 1,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(Dimens.radiusXl),
-        side: expense.isIgnored && !widget.isExpanded
-            ? BorderSide(color: colorScheme.outline.withValues(alpha: 0.3), width: 1)
-            : isSent && !widget.isExpanded
-                ? BorderSide(color: Colors.blue.shade200, width: 1.5)
-                : isReviewed && !widget.isExpanded
-                    ? BorderSide(color: Colors.green.shade300, width: 1.5)
-                    : widget.isExpanded
-                        ? BorderSide(color: colorScheme.primary, width: 1.5)
-                        : BorderSide.none,
-      ),
-      child: InkWell(
-        onTap: widget.onTap,
-        borderRadius: BorderRadius.circular(Dimens.radiusXl),
-        child: Padding(
-          padding: const EdgeInsets.all(Dimens.spaceXl),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // ── En-tête ──────────────────────────────────────────────────
-              Row(
-                children: [
-                  Icon(Icons.calendar_today, size: Dimens.iconXs, color: colorScheme.outline),
-                  const SizedBox(width: Dimens.spaceXs),
-                  Text(
-                    expense.formattedDate,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(color: colorScheme.outline),
-                  ),
-                  const Spacer(),
-                  Text(
-                    expense.formattedAmount,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: amountColor, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(width: Dimens.spaceM),
-                  if (isSent && !widget.isExpanded)
-                    Tooltip(
-                      message: 'Envoyé vers Notion',
-                      child: Icon(Icons.cloud_done, color: Colors.blue.shade400, size: Dimens.spaceXxl),
-                    )
-                  else if (expense.isIgnored && !widget.isExpanded)
-                    Tooltip(
-                      message: 'Ignorée — cliquer pour ré-ouvrir',
-                      child: Icon(Icons.block, color: colorScheme.outline, size: Dimens.spaceXxl),
-                    )
-                  else if (isReviewed && !widget.isExpanded)
-                    Tooltip(
-                      message: 'Modifier',
-                      child: Icon(Icons.check_circle, color: Colors.green.shade600, size: Dimens.spaceXxl),
-                    )
-                  else if (!isReviewed && !expense.isIgnored)
-                    // Bouton ignorer rapide (sans ouvrir la carte)
-                    Tooltip(
-                      message: 'Ignorer cette dépense',
-                      child: GestureDetector(
-                        onTap: () => context.read<ExpensesProvider>().toggleIgnore(expense.id),
-                        child: Icon(Icons.remove_circle_outline, color: colorScheme.outline, size: Dimens.spaceXxl),
-                      ),
-                    ),
-                ],
-              ),
-              const SizedBox(height: Dimens.spaceM),
-              // ── Nom résumé ────────────────────────────────────────────────
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      isReviewed ? expense.cleanName : expense.rawLabel,
-                      style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  if (isReviewed && !isSent && !widget.isExpanded) ...[
-                    const SizedBox(width: Dimens.spaceM),
-                    Icon(Icons.edit_outlined, size: Dimens.iconXs, color: colorScheme.outline),
-                  ],
-                  if (isSent && !widget.isExpanded) ...[
-                    const SizedBox(width: Dimens.spaceM),
-                    Icon(Icons.lock_outline, size: Dimens.iconXs, color: Colors.blue.shade300),
-                  ],
-                ],
-              ),
-              if (isReviewed && !widget.isExpanded) ...[
-                const SizedBox(height: Dimens.spaceS),
+        margin: const EdgeInsets.symmetric(horizontal: Dimens.spaceXl, vertical: Dimens.spaceS),
+        elevation: widget.isExpanded ? 3 : 1,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(Dimens.radiusXl),
+          side: expense.isIgnored && !widget.isExpanded
+              ? BorderSide(color: colorScheme.outline.withValues(alpha: 0.3), width: 1)
+              : isSent && !widget.isExpanded
+              ? BorderSide(color: Colors.blue.shade200, width: 1.5)
+              : isReviewed && !widget.isExpanded
+              ? BorderSide(color: Colors.green.shade300, width: 1.5)
+              : widget.isExpanded
+              ? BorderSide(color: colorScheme.primary, width: 1.5)
+              : BorderSide.none,
+        ),
+        child: InkWell(
+          onTap: widget.onTap,
+          borderRadius: BorderRadius.circular(Dimens.radiusXl),
+          child: Padding(
+            padding: const EdgeInsets.all(Dimens.spaceXl),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // ── En-tête ──────────────────────────────────────────────────
                 Row(
                   children: [
-                    if (expense.category != null)
-                      _summaryChip(context, expense.category!, colorScheme.primaryContainer,
-                          colorScheme.onPrimaryContainer),
+                    Icon(Icons.calendar_today, size: Dimens.iconXs, color: colorScheme.outline),
+                    const SizedBox(width: Dimens.spaceXs),
+                    Text(
+                      expense.formattedDate,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(color: colorScheme.outline),
+                    ),
+                    const Spacer(),
+                    Text(
+                      expense.formattedAmount,
+                      style: Theme.of(
+                        context,
+                      ).textTheme.titleMedium?.copyWith(color: amountColor, fontWeight: FontWeight.bold),
+                    ),
                     const SizedBox(width: Dimens.spaceM),
-                    _summaryChip(context, expense.paymentMethod,
-                        colorScheme.surfaceContainerHighest, colorScheme.onSurfaceVariant),
-                    if (isSent) ...[
+                    if (isSent && !widget.isExpanded)
+                      Tooltip(
+                        message: 'Envoyé vers Notion',
+                        child: Icon(Icons.cloud_done, color: Colors.blue.shade400, size: Dimens.spaceXxl),
+                      )
+                    else if (expense.isIgnored && !widget.isExpanded)
+                      Tooltip(
+                        message: 'Ignorée — cliquer pour ré-ouvrir',
+                        child: Icon(Icons.block, color: colorScheme.outline, size: Dimens.spaceXxl),
+                      )
+                    else if (isReviewed && !widget.isExpanded)
+                      Tooltip(
+                        message: 'Modifier',
+                        child: Icon(Icons.check_circle, color: Colors.green.shade600, size: Dimens.spaceXxl),
+                      )
+                    else if (!isReviewed && !expense.isIgnored)
+                      // Bouton ignorer rapide (sans ouvrir la carte)
+                      Tooltip(
+                        message: 'Ignorer cette dépense',
+                        child: GestureDetector(
+                          onTap: () => context.read<ExpensesProvider>().toggleIgnore(expense.id),
+                          child: Icon(Icons.remove_circle_outline, color: colorScheme.outline, size: Dimens.spaceXxl),
+                        ),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: Dimens.spaceM),
+                // ── Nom résumé ────────────────────────────────────────────────
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        isReviewed ? expense.cleanName : expense.rawLabel,
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    if (isReviewed && !isSent && !widget.isExpanded) ...[
                       const SizedBox(width: Dimens.spaceM),
-                      _summaryChip(context, '📤 Notion', Colors.blue.shade50, Colors.blue.shade700),
+                      Icon(Icons.edit_outlined, size: Dimens.iconXs, color: colorScheme.outline),
+                    ],
+                    if (isSent && !widget.isExpanded) ...[
+                      const SizedBox(width: Dimens.spaceM),
+                      Icon(Icons.lock_outline, size: Dimens.iconXs, color: Colors.blue.shade300),
                     ],
                   ],
                 ),
-              ],
-              if (expense.isIgnored && !widget.isExpanded) ...[
-                const SizedBox(height: Dimens.spaceS),
-                _summaryChip(context, '🚫 Ignorée', colorScheme.surfaceContainerHighest, colorScheme.outline),
-              ],
+                if (isReviewed && !widget.isExpanded) ...[
+                  const SizedBox(height: Dimens.spaceS),
+                  Row(
+                    children: [
+                      if (expense.category != null)
+                        _summaryChip(
+                          context,
+                          expense.category!,
+                          colorScheme.primaryContainer,
+                          colorScheme.onPrimaryContainer,
+                        ),
+                      const SizedBox(width: Dimens.spaceM),
+                      _summaryChip(
+                        context,
+                        expense.paymentMethod,
+                        colorScheme.surfaceContainerHighest,
+                        colorScheme.onSurfaceVariant,
+                      ),
+                      if (isSent) ...[
+                        const SizedBox(width: Dimens.spaceM),
+                        _summaryChip(context, '📤 Notion', Colors.blue.shade50, Colors.blue.shade700),
+                      ],
+                    ],
+                  ),
+                ],
+                if (expense.isIgnored && !widget.isExpanded) ...[
+                  const SizedBox(height: Dimens.spaceS),
+                  _summaryChip(context, '🚫 Ignorée', colorScheme.surfaceContainerHighest, colorScheme.outline),
+                ],
 
-              // ── Formulaire d'édition ──────────────────────────────────────
-              if (widget.isExpanded) ...[
-                const SizedBox(height: Dimens.spaceL),
-                const Divider(height: 1),
-                const SizedBox(height: Dimens.spaceL),
-                _buildForm(context, colorScheme, expense, isReviewed, isSent, settings, suggested),
+                // ── Formulaire d'édition ──────────────────────────────────────
+                if (widget.isExpanded) ...[
+                  const SizedBox(height: Dimens.spaceL),
+                  const Divider(height: 1),
+                  const SizedBox(height: Dimens.spaceL),
+                  _buildForm(context, colorScheme, expense, isReviewed, isSent, settings, suggested),
+                ],
               ],
-            ],
+            ),
           ),
         ),
       ),
-    ),
-   );
+    );
   }
 
   /// Formulaire d'édition d'une dépense avec raccourcis clavier.
@@ -281,13 +285,11 @@ class _ExpenseCardState extends State<ExpenseCard> {
         if (isReviewed)
           Container(
             margin: const EdgeInsets.only(bottom: Dimens.spaceL),
-            padding: const EdgeInsets.symmetric(
-                horizontal: Dimens.spaceM + 2, vertical: Dimens.spaceS),
+            padding: const EdgeInsets.symmetric(horizontal: Dimens.spaceM + 2, vertical: Dimens.spaceS),
             decoration: BoxDecoration(
               color: isSent ? Colors.blue.shade50 : Colors.orange.shade50,
               borderRadius: BorderRadius.circular(Dimens.radiusM),
-              border: Border.all(
-                  color: isSent ? Colors.blue.shade200 : Colors.orange.shade200),
+              border: Border.all(color: isSent ? Colors.blue.shade200 : Colors.orange.shade200),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -299,13 +301,12 @@ class _ExpenseCardState extends State<ExpenseCard> {
                 ),
                 const SizedBox(width: Dimens.spaceS),
                 Text(
-                  isSent
-                      ? 'Déjà envoyée vers Notion — modification possible'
-                      : 'Modification d\'une dépense validée',
+                  isSent ? 'Déjà envoyée vers Notion — modification possible' : 'Modification d\'une dépense validée',
                   style: TextStyle(
-                      fontSize: 12,
-                      color: isSent ? Colors.blue.shade800 : Colors.orange.shade800,
-                      fontWeight: FontWeight.w500),
+                    fontSize: 12,
+                    color: isSent ? Colors.blue.shade800 : Colors.orange.shade800,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ],
             ),
@@ -325,8 +326,9 @@ class _ExpenseCardState extends State<ExpenseCard> {
               Expanded(
                 child: Text(
                   'SG : ${expense.rawLabel}',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: colorScheme.outline, fontStyle: FontStyle.italic),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodySmall?.copyWith(color: colorScheme.outline, fontStyle: FontStyle.italic),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -356,22 +358,19 @@ class _ExpenseCardState extends State<ExpenseCard> {
         const SizedBox(height: Dimens.spaceXl),
 
         // Catégorie
-        Text('Catégorie',
-            style: Theme.of(context)
-                .textTheme
-                .labelLarge
-                ?.copyWith(color: colorScheme.onSurfaceVariant)),
-        if (suggested != null && (_selectedCategory == null || _selectedCategory == suggested) && !expense.isReviewed) ...[
+        Text('Catégorie', style: Theme.of(context).textTheme.labelLarge?.copyWith(color: colorScheme.onSurfaceVariant)),
+        if (suggested != null &&
+            (_selectedCategory == null || _selectedCategory == suggested) &&
+            !expense.isReviewed) ...[
           const SizedBox(height: Dimens.spaceXs),
           Row(
             children: [
               Icon(Icons.auto_awesome, size: Dimens.iconXs, color: colorScheme.primary),
               const SizedBox(width: Dimens.spaceXs),
-              Text('Suggestion : $suggested',
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodySmall
-                      ?.copyWith(color: colorScheme.primary)),
+              Text(
+                'Suggestion : $suggested',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(color: colorScheme.primary),
+              ),
             ],
           ),
         ],
@@ -411,9 +410,7 @@ class _ExpenseCardState extends State<ExpenseCard> {
                 onPressed: widget.onTap,
                 icon: const Icon(Icons.close, size: Dimens.iconM),
                 label: const Text('Annuler'),
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: Dimens.spaceL),
-                ),
+                style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: Dimens.spaceL)),
               ),
             ),
             const SizedBox(width: Dimens.spaceM),
@@ -425,10 +422,7 @@ class _ExpenseCardState extends State<ExpenseCard> {
                   context.read<ExpensesProvider>().toggleIgnore(expense.id);
                   widget.onTap(); // ferme la carte
                 },
-                icon: Icon(
-                  expense.isIgnored ? Icons.undo : Icons.block,
-                  size: Dimens.iconM,
-                ),
+                icon: Icon(expense.isIgnored ? Icons.undo : Icons.block, size: Dimens.iconM),
                 label: Text(expense.isIgnored ? 'Ré-activer' : 'Ignorer'),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: expense.isIgnored ? Colors.green : colorScheme.outline,
@@ -457,21 +451,15 @@ class _ExpenseCardState extends State<ExpenseCard> {
             padding: const EdgeInsets.only(top: Dimens.spaceS),
             child: Text(
               'Sélectionne une catégorie pour valider.',
-              style: Theme.of(context)
-                  .textTheme
-                  .bodySmall
-                  ?.copyWith(color: colorScheme.error),
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(color: colorScheme.error),
               textAlign: TextAlign.center,
             ),
-        ),
+          ),
         Padding(
           padding: const EdgeInsets.only(top: Dimens.spaceXs),
           child: Text(
             '⌨ Enter pour valider · Echap pour fermer',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: colorScheme.outline,
-                  fontSize: 11,
-                ),
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: colorScheme.outline, fontSize: 11),
             textAlign: TextAlign.center,
           ),
         ),
@@ -481,12 +469,12 @@ class _ExpenseCardState extends State<ExpenseCard> {
 
   Widget _summaryChip(BuildContext context, String label, Color bg, Color fg) {
     return Container(
-      padding: const EdgeInsets.symmetric(
-          horizontal: Dimens.spaceM, vertical: Dimens.spaceXxs),
-      decoration:
-          BoxDecoration(color: bg, borderRadius: BorderRadius.circular(Dimens.radiusXl)),
-      child: Text(label,
-          style: TextStyle(fontSize: 11, color: fg, fontWeight: FontWeight.w500)),
+      padding: const EdgeInsets.symmetric(horizontal: Dimens.spaceM, vertical: Dimens.spaceXxs),
+      decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(Dimens.radiusXl)),
+      child: Text(
+        label,
+        style: TextStyle(fontSize: 11, color: fg, fontWeight: FontWeight.w500),
+      ),
     );
   }
 }

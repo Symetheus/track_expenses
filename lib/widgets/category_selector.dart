@@ -44,9 +44,7 @@ class CategorySelector extends StatelessWidget {
             selected: isSelected,
             showCheckmark: isSelected,
             onSelected: (_) => onSelected(cat),
-            backgroundColor: isSuggested && !isSelected
-                ? colorScheme.primaryContainer.withValues(alpha: 0.4)
-                : null,
+            backgroundColor: isSuggested && !isSelected ? colorScheme.primaryContainer.withValues(alpha: 0.4) : null,
             selectedColor: colorScheme.primaryContainer,
             labelStyle: TextStyle(
               fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,

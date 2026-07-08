@@ -16,10 +16,7 @@ class AnalyticsScreen extends StatefulWidget {
 class _AnalyticsScreenState extends State<AnalyticsScreen> {
   int _touchedPieIndex = -1;
 
-  static const _frMonths = [
-    'Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun',
-    'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc',
-  ];
+  static const _frMonths = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'];
 
   static const _palette = [
     Color(0xFF6C63FF),
@@ -52,8 +49,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
             // ── En-tête ───────────────────────────────────────────────
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(
-                    Dimens.homePadding, 28, Dimens.homePadding, 16),
+                padding: const EdgeInsets.fromLTRB(Dimens.homePadding, 28, Dimens.homePadding, 16),
                 child: Row(
                   children: [
                     Container(
@@ -63,47 +59,34 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                         color: colorScheme.primaryContainer,
                         borderRadius: BorderRadius.circular(Dimens.radiusXl),
                       ),
-                      child: Icon(Icons.bar_chart,
-                          size: Dimens.iconXl,
-                          color: colorScheme.onPrimaryContainer),
+                      child: Icon(Icons.bar_chart, size: Dimens.iconXl, color: colorScheme.onPrimaryContainer),
                     ),
                     const SizedBox(width: Dimens.spaceM),
                     Text(
                       'Analyses',
-                      style: Theme.of(context)
-                          .textTheme
-                          .headlineSmall
-                          ?.copyWith(fontWeight: FontWeight.bold),
+                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
                     ),
                     const Spacer(),
                     if (!settings.isNotionConfigured)
                       Tooltip(
                         message: 'Configure Notion dans les Paramètres',
-                        child: Icon(Icons.warning_amber_rounded,
-                            color: Colors.orange.shade700),
+                        child: Icon(Icons.warning_amber_rounded, color: Colors.orange.shade700),
                       ),
                     const SizedBox(width: Dimens.spaceM),
                     FilledButton.icon(
-                      onPressed: settings.isNotionConfigured &&
-                              analytics.state != AnalyticsLoadState.loading
-                          ? () => context
-                              .read<AnalyticsProvider>()
-                              .fetchFromNotion(settings)
+                      onPressed: settings.isNotionConfigured && analytics.state != AnalyticsLoadState.loading
+                          ? () => context.read<AnalyticsProvider>().fetchFromNotion(settings)
                           : null,
                       icon: analytics.state == AnalyticsLoadState.loading
                           ? const SizedBox(
                               width: 16,
                               height: 16,
-                              child: CircularProgressIndicator(
-                                  strokeWidth: 2, color: Colors.white),
+                              child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                             )
                           : const Icon(Icons.refresh, size: 18),
                       label: Text(
-                        analytics.state == AnalyticsLoadState.idle
-                            ? 'Charger depuis Notion'
-                            : 'Actualiser',
-                        style:
-                            const TextStyle(fontWeight: FontWeight.bold),
+                        analytics.state == AnalyticsLoadState.idle ? 'Charger depuis Notion' : 'Actualiser',
+                        style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ),
                   ],
@@ -113,34 +96,24 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
 
             // ── Contenu dynamique ─────────────────────────────────────
             if (!settings.isNotionConfigured)
-              SliverToBoxAdapter(
-                  child: _buildNotionNotConfigured(context))
+              SliverToBoxAdapter(child: _buildNotionNotConfigured(context))
             else if (analytics.state == AnalyticsLoadState.idle)
               SliverToBoxAdapter(child: _buildIdleState(context, colorScheme))
             else if (analytics.state == AnalyticsLoadState.loading)
               SliverToBoxAdapter(child: _buildLoading())
             else if (analytics.state == AnalyticsLoadState.error)
-              SliverToBoxAdapter(
-                  child: _buildError(context, analytics.errorMessage,
-                      colorScheme))
+              SliverToBoxAdapter(child: _buildError(context, analytics.errorMessage, colorScheme))
             else ...[
               // Filtre par année
-              SliverToBoxAdapter(
-                  child: _buildYearFilter(context, analytics, colorScheme)),
+              SliverToBoxAdapter(child: _buildYearFilter(context, analytics, colorScheme)),
 
               // Cartes stats
-              SliverToBoxAdapter(
-                  child: _buildStats(
-                      context, analytics, currencyFmt, colorScheme)),
+              SliverToBoxAdapter(child: _buildStats(context, analytics, currencyFmt, colorScheme)),
 
               // Graphiques (si données)
               if (analytics.filteredExpenses.isNotEmpty) ...[
-                SliverToBoxAdapter(
-                    child: _buildMonthlyChart(
-                        context, analytics, compactFmt, colorScheme)),
-                SliverToBoxAdapter(
-                    child: _buildCategoryChart(
-                        context, analytics, currencyFmt, colorScheme)),
+                SliverToBoxAdapter(child: _buildMonthlyChart(context, analytics, compactFmt, colorScheme)),
+                SliverToBoxAdapter(child: _buildCategoryChart(context, analytics, currencyFmt, colorScheme)),
               ] else
                 SliverToBoxAdapter(child: _buildNoData(context, colorScheme)),
 
@@ -164,8 +137,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
             children: [
               const Icon(Icons.cloud_off, size: 64, color: Colors.grey),
               const SizedBox(height: Dimens.spaceXl),
-              Text('Notion non configuré',
-                  style: Theme.of(context).textTheme.titleLarge),
+              Text('Notion non configuré', style: Theme.of(context).textTheme.titleLarge),
               const SizedBox(height: Dimens.spaceM),
               Text(
                 'Configure ton token et l\'ID de ta base dans les Paramètres\n'
@@ -188,8 +160,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
 
   Widget _buildIdleState(BuildContext context, ColorScheme cs) {
     return Padding(
-      padding: const EdgeInsets.symmetric(
-          horizontal: Dimens.homePadding, vertical: Dimens.space32),
+      padding: const EdgeInsets.symmetric(horizontal: Dimens.homePadding, vertical: Dimens.space32),
       child: Container(
         padding: const EdgeInsets.all(Dimens.space32),
         decoration: BoxDecoration(
@@ -198,24 +169,17 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
         ),
         child: Column(
           children: [
-            Icon(Icons.bar_chart,
-                size: 80, color: cs.primary.withValues(alpha: 0.35)),
+            Icon(Icons.bar_chart, size: 80, color: cs.primary.withValues(alpha: 0.35)),
             const SizedBox(height: Dimens.spaceXl),
             Text(
               'Tes analyses t\'attendent !',
-              style: Theme.of(context)
-                  .textTheme
-                  .titleLarge
-                  ?.copyWith(fontWeight: FontWeight.bold),
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: Dimens.spaceM),
             Text(
               'Clique sur "Charger depuis Notion" pour récupérer\n'
               'tes dépenses et afficher les graphiques.',
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyMedium
-                  ?.copyWith(color: cs.onSurfaceVariant),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
               textAlign: TextAlign.center,
             ),
           ],
@@ -242,17 +206,14 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
       padding: const EdgeInsets.all(Dimens.homePadding),
       child: Container(
         padding: const EdgeInsets.all(Dimens.spaceXl),
-        decoration: BoxDecoration(
-          color: cs.errorContainer,
-          borderRadius: BorderRadius.circular(Dimens.radiusXl),
-        ),
+        decoration: BoxDecoration(color: cs.errorContainer, borderRadius: BorderRadius.circular(Dimens.radiusXl)),
         child: Row(
           children: [
             Icon(Icons.error_outline, color: cs.onErrorContainer),
             const SizedBox(width: Dimens.spaceM),
             Expanded(
-                child: Text(msg,
-                    style: TextStyle(color: cs.onErrorContainer))),
+              child: Text(msg, style: TextStyle(color: cs.onErrorContainer)),
+            ),
           ],
         ),
       ),
@@ -261,9 +222,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
 
   Widget _buildNoData(BuildContext context, ColorScheme cs) {
     final analytics = context.read<AnalyticsProvider>();
-    final period = analytics.selectedYear != null
-        ? 'l\'année ${analytics.selectedYear}'
-        : 'toutes les années';
+    final period = analytics.selectedYear != null ? 'l\'année ${analytics.selectedYear}' : 'toutes les années';
     return Padding(
       padding: const EdgeInsets.all(Dimens.homePadding),
       child: Container(
@@ -278,15 +237,17 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
             const SizedBox(height: Dimens.spaceM),
             Text(
               'Aucune dépense pour $period',
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: cs.onSurfaceVariant, fontWeight: FontWeight.w600),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyLarge?.copyWith(color: cs.onSurfaceVariant, fontWeight: FontWeight.w600),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: Dimens.spaceS),
             Text(
               'Essaie de sélectionner une autre période ou recharge les données.',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: cs.onSurfaceVariant, fontStyle: FontStyle.italic),
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: cs.onSurfaceVariant, fontStyle: FontStyle.italic),
               textAlign: TextAlign.center,
             ),
           ],
@@ -297,21 +258,13 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
 
   // ── Filtre année ──────────────────────────────────────────────────────────
 
-  Widget _buildYearFilter(
-      BuildContext context, AnalyticsProvider a, ColorScheme cs) {
+  Widget _buildYearFilter(BuildContext context, AnalyticsProvider a, ColorScheme cs) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(
-          Dimens.homePadding, 0, Dimens.homePadding, Dimens.spaceM),
+      padding: const EdgeInsets.fromLTRB(Dimens.homePadding, 0, Dimens.homePadding, Dimens.spaceM),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Période',
-            style: Theme.of(context)
-                .textTheme
-                .labelLarge
-                ?.copyWith(color: cs.onSurfaceVariant),
-          ),
+          Text('Période', style: Theme.of(context).textTheme.labelLarge?.copyWith(color: cs.onSurfaceVariant)),
           const SizedBox(height: Dimens.spaceS),
           Wrap(
             spacing: Dimens.spaceM,
@@ -320,15 +273,13 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
               FilterChip(
                 label: const Text('Tout'),
                 selected: a.selectedYear == null,
-                onSelected: (_) =>
-                    context.read<AnalyticsProvider>().setSelectedYear(null),
+                onSelected: (_) => context.read<AnalyticsProvider>().setSelectedYear(null),
               ),
               ...a.availableYears.map(
                 (y) => FilterChip(
                   label: Text('$y'),
                   selected: a.selectedYear == y,
-                  onSelected: (_) =>
-                      context.read<AnalyticsProvider>().setSelectedYear(y),
+                  onSelected: (_) => context.read<AnalyticsProvider>().setSelectedYear(y),
                 ),
               ),
             ],
@@ -340,11 +291,9 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
 
   // ── Cartes de statistiques ────────────────────────────────────────────────
 
-  Widget _buildStats(BuildContext context, AnalyticsProvider a,
-      NumberFormat fmt, ColorScheme cs) {
+  Widget _buildStats(BuildContext context, AnalyticsProvider a, NumberFormat fmt, ColorScheme cs) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(
-          Dimens.homePadding, 0, Dimens.homePadding, Dimens.spaceXl),
+      padding: const EdgeInsets.fromLTRB(Dimens.homePadding, 0, Dimens.homePadding, Dimens.spaceXl),
       child: Row(
         children: [
           Expanded(
@@ -380,8 +329,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
 
   // ── Graphique en barres (mensuel) ─────────────────────────────────────────
 
-  Widget _buildMonthlyChart(BuildContext context, AnalyticsProvider a,
-      NumberFormat compactFmt, ColorScheme cs) {
+  Widget _buildMonthlyChart(BuildContext context, AnalyticsProvider a, NumberFormat compactFmt, ColorScheme cs) {
     final List<String> labels;
     final List<double> values;
 
@@ -389,8 +337,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
       // 12 mois de l'année sélectionnée
       labels = _frMonths.toList();
       values = List.generate(12, (i) {
-        final key =
-            '${a.selectedYear}-${(i + 1).toString().padLeft(2, '0')}';
+        final key = '${a.selectedYear}-${(i + 1).toString().padLeft(2, '0')}';
         return a.monthlyTotals[key] ?? 0.0;
       });
     } else {
@@ -412,8 +359,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
     final barWidth = a.selectedYear != null ? 22.0 : 14.0;
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(
-          Dimens.homePadding, 0, Dimens.homePadding, Dimens.spaceXl),
+      padding: const EdgeInsets.fromLTRB(Dimens.homePadding, 0, Dimens.homePadding, Dimens.spaceXl),
       child: Card(
         child: Padding(
           padding: const EdgeInsets.all(Dimens.spaceXl),
@@ -422,10 +368,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
             children: [
               Text(
                 'Dépenses par mois',
-                style: Theme.of(context)
-                    .textTheme
-                    .titleMedium
-                    ?.copyWith(fontWeight: FontWeight.bold),
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: Dimens.spaceXl),
               SizedBox(
@@ -439,19 +382,13 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                         getTooltipColor: (_) => cs.inverseSurface,
                         getTooltipItem: (group, p1, rod, p2) => BarTooltipItem(
                           '${labels[group.x]}\n${compactFmt.format(rod.toY.toInt())} €',
-                          TextStyle(
-                            color: cs.onInverseSurface,
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          TextStyle(color: cs.onInverseSurface, fontSize: 12, fontWeight: FontWeight.bold),
                         ),
                       ),
                     ),
                     titlesData: FlTitlesData(
-                      topTitles: const AxisTitles(
-                          sideTitles: SideTitles(showTitles: false)),
-                      rightTitles: const AxisTitles(
-                          sideTitles: SideTitles(showTitles: false)),
+                      topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                      rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
                       bottomTitles: AxisTitles(
                         sideTitles: SideTitles(
                           showTitles: true,
@@ -463,8 +400,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                             }
                             return SideTitleWidget(
                               meta: meta,
-                              child: Text(labels[i],
-                                  style: const TextStyle(fontSize: 10)),
+                              child: Text(labels[i], style: const TextStyle(fontSize: 10)),
                             );
                           },
                         ),
@@ -477,13 +413,10 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                             if (v == 0 || v == meta.max) {
                               return const SizedBox.shrink();
                             }
-                            final label = maxVal >= 1000
-                                ? '${(v / 1000).toStringAsFixed(0)}k€'
-                                : '${v.toInt()}€';
+                            final label = maxVal >= 1000 ? '${(v / 1000).toStringAsFixed(0)}k€' : '${v.toInt()}€';
                             return SideTitleWidget(
                               meta: meta,
-                              child: Text(label,
-                                  style: const TextStyle(fontSize: 10)),
+                              child: Text(label, style: const TextStyle(fontSize: 10)),
                             );
                           },
                         ),
@@ -493,10 +426,8 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                     gridData: FlGridData(
                       show: true,
                       drawVerticalLine: false,
-                      getDrawingHorizontalLine: (_) => FlLine(
-                        color: cs.outlineVariant.withValues(alpha: 0.5),
-                        strokeWidth: 1,
-                      ),
+                      getDrawingHorizontalLine: (_) =>
+                          FlLine(color: cs.outlineVariant.withValues(alpha: 0.5), strokeWidth: 1),
                     ),
                     barGroups: List.generate(values.length, (i) {
                       return BarChartGroupData(
@@ -504,9 +435,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                         barRods: [
                           BarChartRodData(
                             toY: values[i],
-                            color: values[i] > 0
-                                ? cs.primary
-                                : cs.surfaceContainerHighest,
+                            color: values[i] > 0 ? cs.primary : cs.surfaceContainerHighest,
                             width: barWidth,
                             borderRadius: const BorderRadius.only(
                               topLeft: Radius.circular(4),
@@ -528,13 +457,11 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
 
   // ── Graphique en camembert (catégories) ───────────────────────────────────
 
-  Widget _buildCategoryChart(BuildContext context, AnalyticsProvider a,
-      NumberFormat fmt, ColorScheme cs) {
+  Widget _buildCategoryChart(BuildContext context, AnalyticsProvider a, NumberFormat fmt, ColorScheme cs) {
     final catMap = a.categoryTotals;
     if (catMap.isEmpty) return const SizedBox.shrink();
 
-    final sorted = catMap.entries.toList()
-      ..sort((x, y) => y.value.compareTo(x.value));
+    final sorted = catMap.entries.toList()..sort((x, y) => y.value.compareTo(x.value));
     final total = a.totalSpending;
 
     final sections = List.generate(sorted.length, (i) {
@@ -547,8 +474,8 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
         title: isTouched
             ? '${fmt.format(entry.value)} €'
             : total > 0
-                ? '${(entry.value / total * 100).toStringAsFixed(1)}%'
-                : '',
+            ? '${(entry.value / total * 100).toStringAsFixed(1)}%'
+            : '',
         radius: isTouched ? 95.0 : 82.0,
         titleStyle: TextStyle(
           fontSize: isTouched ? 13.0 : 11.0,
@@ -560,8 +487,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
     });
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(
-          Dimens.homePadding, 0, Dimens.homePadding, Dimens.spaceXl),
+      padding: const EdgeInsets.fromLTRB(Dimens.homePadding, 0, Dimens.homePadding, Dimens.spaceXl),
       child: Card(
         child: Padding(
           padding: const EdgeInsets.all(Dimens.spaceXl),
@@ -570,10 +496,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
             children: [
               Text(
                 'Répartition par catégorie',
-                style: Theme.of(context)
-                    .textTheme
-                    .titleMedium
-                    ?.copyWith(fontWeight: FontWeight.bold),
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: Dimens.spaceXl),
               Row(
@@ -597,8 +520,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                                 _touchedPieIndex = -1;
                                 return;
                               }
-                              _touchedPieIndex =
-                                  response.touchedSection!.touchedSectionIndex;
+                              _touchedPieIndex = response.touchedSection!.touchedSectionIndex;
                             });
                           },
                         ),
@@ -614,9 +536,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                       children: List.generate(sorted.length, (i) {
                         final entry = sorted[i];
                         final color = _palette[i % _palette.length];
-                        final pct = total > 0
-                            ? '${(entry.value / total * 100).toStringAsFixed(1)}%'
-                            : '0%';
+                        final pct = total > 0 ? '${(entry.value / total * 100).toStringAsFixed(1)}%' : '0%';
                         return _LegendItem(
                           color: color,
                           label: entry.key,
@@ -645,12 +565,7 @@ class _StatCard extends StatelessWidget {
   final String value;
   final Color color;
 
-  const _StatCard({
-    required this.icon,
-    required this.label,
-    required this.value,
-    required this.color,
-  });
+  const _StatCard({required this.icon, required this.label, required this.value, required this.color});
 
   @override
   Widget build(BuildContext context) {
@@ -666,20 +581,11 @@ class _StatCard extends StatelessWidget {
         children: [
           Icon(icon, size: Dimens.iconL, color: color),
           const SizedBox(height: Dimens.spaceM),
-          Text(
-            label,
-            style: Theme.of(context)
-                .textTheme
-                .bodySmall
-                ?.copyWith(color: cs.onSurfaceVariant),
-          ),
+          Text(label, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: cs.onSurfaceVariant)),
           const SizedBox(height: Dimens.spaceXxs),
           Text(
             value,
-            style: Theme.of(context)
-                .textTheme
-                .titleMedium
-                ?.copyWith(fontWeight: FontWeight.bold),
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
@@ -711,12 +617,9 @@ class _LegendItem extends StatelessWidget {
     final cs = Theme.of(context).colorScheme;
     return AnimatedContainer(
       duration: const Duration(milliseconds: 150),
-      padding: const EdgeInsets.symmetric(
-          horizontal: Dimens.spaceL, vertical: Dimens.spaceM),
+      padding: const EdgeInsets.symmetric(horizontal: Dimens.spaceL, vertical: Dimens.spaceM),
       decoration: BoxDecoration(
-        color: isSelected
-            ? color.withValues(alpha: 0.15)
-            : cs.surfaceContainerHighest,
+        color: isSelected ? color.withValues(alpha: 0.15) : cs.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(Dimens.radiusM),
         border: isSelected ? Border.all(color: color, width: 1.5) : null,
       ),
@@ -726,24 +629,16 @@ class _LegendItem extends StatelessWidget {
           Container(
             width: 12,
             height: 12,
-            decoration: BoxDecoration(
-              color: color,
-              borderRadius: BorderRadius.circular(3),
-            ),
+            decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(3)),
           ),
           const SizedBox(width: Dimens.spaceM),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(label,
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodySmall
-                      ?.copyWith(fontWeight: FontWeight.w600)),
+              Text(label, style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600)),
               Text(
                 '$amount · $percent',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: cs.onSurfaceVariant, fontSize: 11),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(color: cs.onSurfaceVariant, fontSize: 11),
               ),
             ],
           ),
@@ -752,9 +647,3 @@ class _LegendItem extends StatelessWidget {
     );
   }
 }
-
-
-
-
-
-

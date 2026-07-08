@@ -53,20 +53,14 @@ class ExpensesProvider extends ChangeNotifier {
     try {
       final parsed = await CsvParserService.parseFile(filePath);
       _expenses = parsed.map((e) {
-        final learned = _memory.getCategoryForExpense(
-          cleanName: e.cleanName,
-          rawLabel: e.rawLabel,
-        );
+        final learned = _memory.getCategoryForExpense(cleanName: e.cleanName, rawLabel: e.rawLabel);
         return learned != null ? e.copyWith(category: learned) : e;
       }).toList();
       _importedFileName = filePath.split('/').last;
       _state = LoadingState.success;
 
       // Créer l'entrée dans l'historique + copier le CSV
-      final record = await _importHistory.addImport(
-        csvSourcePath: filePath,
-        expenses: _expenses,
-      );
+      final record = await _importHistory.addImport(csvSourcePath: filePath, expenses: _expenses);
       _activeImportId = record.id;
     } catch (e) {
       _errorMessage = e.toString().replaceFirst('Exception: ', '');
@@ -106,7 +100,6 @@ class ExpensesProvider extends ChangeNotifier {
     }
     notifyListeners();
   }
-
 
   /// Bascule l'état ignoré d'une dépense.
   Future<void> toggleIgnore(String id) async {

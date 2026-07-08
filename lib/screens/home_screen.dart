@@ -23,9 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final provider = context.read<ExpensesProvider>();
     await provider.restoreFromRecord(record);
     if (!mounted) return;
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => const ReviewScreen()),
-    );
+    Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ReviewScreen()));
   }
 
   Future<void> _pickAndImport() async {
@@ -48,9 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
     await provider.importFromFile(path);
     if (!context.mounted) return;
     if (provider.state == LoadingState.success) {
-      Navigator.of(context).push(
-        MaterialPageRoute(builder: (_) => const ReviewScreen()),
-      );
+      Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ReviewScreen()));
     } else {
       _showError(provider.errorMessage);
     }
@@ -68,10 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
           'seront définitivement supprimées.',
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Annuler'),
-          ),
+          TextButton(onPressed: () => Navigator.of(ctx).pop(false), child: const Text('Annuler')),
           FilledButton(
             style: FilledButton.styleFrom(backgroundColor: Colors.red),
             onPressed: () => Navigator.of(ctx).pop(true),
@@ -92,12 +85,7 @@ class _HomeScreenState extends State<HomeScreen> {
         icon: const Icon(Icons.error_outline, color: Colors.red, size: 40),
         title: const Text('Erreur d\'import'),
         content: Text(message),
-        actions: [
-          FilledButton(
-            onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('OK'),
-          ),
-        ],
+        actions: [FilledButton(onPressed: () => Navigator.of(ctx).pop(), child: const Text('OK'))],
       ),
     );
   }
@@ -109,187 +97,185 @@ class _HomeScreenState extends State<HomeScreen> {
     final history = context.watch<ImportHistoryService>().history;
 
     return DropTarget(
-        onDragDone: (details) {
-          setState(() => _isDragOver = false);
-          if (details.files.isNotEmpty) _importFromPath(details.files.first.path);
-        },
-        onDragEntered: (_) => setState(() => _isDragOver = true),
-        onDragExited: (_) => setState(() => _isDragOver = false),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          decoration: _isDragOver
-              ? BoxDecoration(
-                  border: Border.all(color: colorScheme.primary, width: 3),
-                  borderRadius: BorderRadius.circular(Dimens.radiusXxl),
-                  color: colorScheme.primaryContainer.withValues(alpha: 0.15),
-                )
-              : null,
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: Dimens.maxWidthHome),
-              child: CustomScrollView(
-                slivers: [
-                  // ── En-tête + bouton import ────────────────────────────
+      onDragDone: (details) {
+        setState(() => _isDragOver = false);
+        if (details.files.isNotEmpty) _importFromPath(details.files.first.path);
+      },
+      onDragEntered: (_) => setState(() => _isDragOver = true),
+      onDragExited: (_) => setState(() => _isDragOver = false),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        decoration: _isDragOver
+            ? BoxDecoration(
+                border: Border.all(color: colorScheme.primary, width: 3),
+                borderRadius: BorderRadius.circular(Dimens.radiusXxl),
+                color: colorScheme.primaryContainer.withValues(alpha: 0.15),
+              )
+            : null,
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: Dimens.maxWidthHome),
+            child: CustomScrollView(
+              slivers: [
+                // ── En-tête + bouton import ────────────────────────────
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(
+                      Dimens.homePadding,
+                      Dimens.homePadding,
+                      Dimens.homePadding,
+                      Dimens.space24,
+                    ),
+                    child: Column(
+                      children: [
+                        Container(
+                          width: Dimens.homeIconSize,
+                          height: Dimens.homeIconSize,
+                          decoration: BoxDecoration(
+                            color: _isDragOver ? colorScheme.primary : colorScheme.primaryContainer,
+                            borderRadius: BorderRadius.circular(Dimens.radiusHero),
+                          ),
+                          child: Icon(
+                            _isDragOver ? Icons.file_download : Icons.receipt_long,
+                            size: Dimens.iconHero,
+                            color: _isDragOver ? colorScheme.onPrimary : colorScheme.onPrimaryContainer,
+                          ),
+                        ),
+                        const SizedBox(height: Dimens.space32),
+                        Text(
+                          _isDragOver ? 'Dépose ton CSV ici !' : 'SG vers Notion',
+                          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: _isDragOver ? colorScheme.primary : null,
+                          ),
+                        ),
+                        const SizedBox(height: Dimens.spaceL),
+                        Text(
+                          'Importe ton relevé CSV de la Société Générale,\n'
+                          'révise les libellés et catégories, puis exporte\n'
+                          'directement vers ta base Notion.',
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: Dimens.space32),
+                        SizedBox(
+                          width: double.infinity,
+                          height: Dimens.buttonHeightL,
+                          child: FilledButton.icon(
+                            onPressed: isLoading ? null : _pickAndImport,
+                            icon: isLoading
+                                ? const SizedBox(
+                                    width: Dimens.spaceXxl,
+                                    height: Dimens.spaceXxl,
+                                    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                                  )
+                                : const Icon(Icons.upload_file),
+                            label: Text(
+                              isLoading ? 'Chargement...' : 'Importer un CSV SG',
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: Dimens.spaceL),
+                        Text(
+                          'ou glisse-dépose ton fichier CSV ici',
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(color: colorScheme.outline),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                // ── Historique des imports ─────────────────────────────
+                if (history.isNotEmpty) ...[
                   SliverToBoxAdapter(
                     child: Padding(
-                      padding: const EdgeInsets.fromLTRB(
-                          Dimens.homePadding, Dimens.homePadding,
-                          Dimens.homePadding, Dimens.space24),
-                      child: Column(
+                      padding: const EdgeInsets.symmetric(horizontal: Dimens.homePadding),
+                      child: Row(
                         children: [
+                          Icon(Icons.history, size: Dimens.iconL, color: colorScheme.primary),
+                          const SizedBox(width: Dimens.spaceM),
+                          Text(
+                            'Imports en cours',
+                            style: Theme.of(
+                              context,
+                            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold, color: colorScheme.primary),
+                          ),
+                          const SizedBox(width: Dimens.spaceM),
                           Container(
-                            width: Dimens.homeIconSize,
-                            height: Dimens.homeIconSize,
+                            padding: const EdgeInsets.symmetric(horizontal: Dimens.spaceM, vertical: 2),
                             decoration: BoxDecoration(
-                              color: _isDragOver ? colorScheme.primary : colorScheme.primaryContainer,
-                              borderRadius: BorderRadius.circular(Dimens.radiusHero),
+                              color: colorScheme.primaryContainer,
+                              borderRadius: BorderRadius.circular(Dimens.radiusL),
                             ),
-                            child: Icon(
-                              _isDragOver ? Icons.file_download : Icons.receipt_long,
-                              size: Dimens.iconHero,
-                              color: _isDragOver ? colorScheme.onPrimary : colorScheme.onPrimaryContainer,
-                            ),
-                          ),
-                          const SizedBox(height: Dimens.space32),
-                          Text(
-                            _isDragOver ? 'Dépose ton CSV ici !' : 'SG vers Notion',
-                            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: _isDragOver ? colorScheme.primary : null,
-                                ),
-                          ),
-                          const SizedBox(height: Dimens.spaceL),
-                          Text(
-                            'Importe ton relevé CSV de la Société Générale,\n'
-                            'révise les libellés et catégories, puis exporte\n'
-                            'directement vers ta base Notion.',
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  color: colorScheme.onSurfaceVariant),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: Dimens.space32),
-                          SizedBox(
-                            width: double.infinity,
-                            height: Dimens.buttonHeightL,
-                            child: FilledButton.icon(
-                              onPressed: isLoading ? null : _pickAndImport,
-                              icon: isLoading
-                                  ? const SizedBox(
-                                      width: Dimens.spaceXxl,
-                                      height: Dimens.spaceXxl,
-                                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                                    )
-                                  : const Icon(Icons.upload_file),
-                              label: Text(
-                                isLoading ? 'Chargement...' : 'Importer un CSV SG',
-                                style: const TextStyle(fontSize: 16),
+                            child: Text(
+                              '${history.length}',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: colorScheme.onPrimaryContainer,
                               ),
                             ),
-                          ),
-                          const SizedBox(height: Dimens.spaceL),
-                          Text(
-                            'ou glisse-dépose ton fichier CSV ici',
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: colorScheme.outline),
                           ),
                         ],
                       ),
                     ),
                   ),
+                  const SliverToBoxAdapter(child: SizedBox(height: Dimens.spaceM)),
+                  SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (ctx, i) => _ImportRecordCard(
+                        record: history[i],
+                        onOpen: () => _openRecord(history[i]),
+                        onDelete: () => _confirmDelete(history[i]),
+                      ),
+                      childCount: history.length,
+                    ),
+                  ),
+                  const SliverToBoxAdapter(child: SizedBox(height: Dimens.space24)),
+                ],
 
-                  // ── Historique des imports ─────────────────────────────
-                  if (history.isNotEmpty) ...[
-                    SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: Dimens.homePadding),
-                        child: Row(
-                          children: [
-                            Icon(Icons.history, size: Dimens.iconL, color: colorScheme.primary),
-                            const SizedBox(width: Dimens.spaceM),
-                            Text(
-                              'Imports en cours',
-                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: colorScheme.primary,
-                                  ),
-                            ),
-                            const SizedBox(width: Dimens.spaceM),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: Dimens.spaceM, vertical: 2),
-                              decoration: BoxDecoration(
-                                color: colorScheme.primaryContainer,
-                                borderRadius: BorderRadius.circular(Dimens.radiusL),
-                              ),
-                              child: Text(
-                                '${history.length}',
-                                style: TextStyle(
-                                  fontSize: 12,
+                // ── Info format ───────────────────────────────────────
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(Dimens.homePadding, 0, Dimens.homePadding, Dimens.homePadding),
+                    child: Container(
+                      padding: const EdgeInsets.all(Dimens.spaceXl),
+                      decoration: BoxDecoration(
+                        color: colorScheme.surfaceContainerHighest,
+                        borderRadius: BorderRadius.circular(Dimens.radiusXl),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(Icons.info_outline, size: Dimens.iconS, color: colorScheme.primary),
+                              const SizedBox(width: Dimens.spaceM),
+                              Text(
+                                'Format attendu (CSV Société Générale)',
+                                style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                                  color: colorScheme.primary,
                                   fontWeight: FontWeight.bold,
-                                  color: colorScheme.onPrimaryContainer,
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SliverToBoxAdapter(child: SizedBox(height: Dimens.spaceM)),
-                    SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                        (ctx, i) => _ImportRecordCard(
-                          record: history[i],
-                          onOpen: () => _openRecord(history[i]),
-                          onDelete: () => _confirmDelete(history[i]),
-                        ),
-                        childCount: history.length,
-                      ),
-                    ),
-                    const SliverToBoxAdapter(child: SizedBox(height: Dimens.space24)),
-                  ],
-
-                  // ── Info format ───────────────────────────────────────
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(
-                          Dimens.homePadding, 0, Dimens.homePadding, Dimens.homePadding),
-                      child: Container(
-                        padding: const EdgeInsets.all(Dimens.spaceXl),
-                        decoration: BoxDecoration(
-                          color: colorScheme.surfaceContainerHighest,
-                          borderRadius: BorderRadius.circular(Dimens.radiusXl),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Icon(Icons.info_outline, size: Dimens.iconS, color: colorScheme.primary),
-                                const SizedBox(width: Dimens.spaceM),
-                                Text(
-                                  'Format attendu (CSV Société Générale)',
-                                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                                        color: colorScheme.primary,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: Dimens.spaceM),
-                            _infoRow(context, 'Colonnes', 'Date, Libellé, Détail, Montant, Devise'),
-                            _infoRow(context, 'Séparateur', 'Point-virgule (;)'),
-                            _infoRow(context, 'Format date', 'JJ/MM/AAAA'),
-                            _infoRow(context, 'Encodage', 'Latin-1 (Windows-1252)'),
-                          ],
-                        ),
+                            ],
+                          ),
+                          const SizedBox(height: Dimens.spaceM),
+                          _infoRow(context, 'Colonnes', 'Date, Libellé, Détail, Montant, Devise'),
+                          _infoRow(context, 'Séparateur', 'Point-virgule (;)'),
+                          _infoRow(context, 'Format date', 'JJ/MM/AAAA'),
+                          _infoRow(context, 'Encodage', 'Latin-1 (Windows-1252)'),
+                        ],
                       ),
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
+      ),
     );
   }
 
@@ -300,8 +286,7 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           SizedBox(
             width: Dimens.infoLabelWidthHome,
-            child: Text(label,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.bold)),
+            child: Text(label, style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.bold)),
           ),
           Text(value, style: Theme.of(context).textTheme.bodySmall),
         ],
@@ -317,11 +302,7 @@ class _ImportRecordCard extends StatelessWidget {
   final VoidCallback onOpen;
   final VoidCallback onDelete;
 
-  const _ImportRecordCard({
-    required this.record,
-    required this.onOpen,
-    required this.onDelete,
-  });
+  const _ImportRecordCard({required this.record, required this.onOpen, required this.onDelete});
 
   @override
   Widget build(BuildContext context) {
@@ -330,16 +311,12 @@ class _ImportRecordCard extends StatelessWidget {
     final dateStr = DateFormat('d MMM yyyy', 'fr_FR').format(record.importedAt);
 
     return Padding(
-      padding: const EdgeInsets.symmetric(
-          horizontal: Dimens.homePadding, vertical: Dimens.spaceS),
+      padding: const EdgeInsets.symmetric(horizontal: Dimens.homePadding, vertical: Dimens.spaceS),
       child: Container(
         decoration: BoxDecoration(
           color: colorScheme.surfaceContainer,
           borderRadius: BorderRadius.circular(Dimens.radiusXxl),
-          border: Border.all(
-            color: isComplete ? Colors.green.shade300 : colorScheme.outlineVariant,
-            width: 1.5,
-          ),
+          border: Border.all(color: isComplete ? Colors.green.shade300 : colorScheme.outlineVariant, width: 1.5),
         ),
         padding: const EdgeInsets.all(Dimens.spaceXl),
         child: Column(
@@ -360,26 +337,18 @@ class _ImportRecordCard extends StatelessWidget {
                     children: [
                       Text(
                         record.originalFileName,
-                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                              fontWeight: FontWeight.bold),
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      Text(
-                        dateStr,
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: colorScheme.outline),
-                      ),
+                      Text(dateStr, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: colorScheme.outline)),
                     ],
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: Dimens.spaceM, vertical: Dimens.spaceXxs),
+                  padding: const EdgeInsets.symmetric(horizontal: Dimens.spaceM, vertical: Dimens.spaceXxs),
                   decoration: BoxDecoration(
-                    color: isComplete
-                        ? Colors.green.shade50
-                        : colorScheme.primaryContainer.withValues(alpha: 0.5),
+                    color: isComplete ? Colors.green.shade50 : colorScheme.primaryContainer.withValues(alpha: 0.5),
                     borderRadius: BorderRadius.circular(Dimens.radiusL),
                   ),
                   child: Text(
@@ -400,16 +369,15 @@ class _ImportRecordCard extends StatelessWidget {
               children: [
                 Text(
                   '${record.reviewedCount} / ${record.totalCount} révisées',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: colorScheme.onSurfaceVariant),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant),
                 ),
                 const Spacer(),
                 Text(
                   '${(record.progress * 100).toInt()}%',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: isComplete ? Colors.green.shade700 : colorScheme.primary,
-                      ),
+                    fontWeight: FontWeight.bold,
+                    color: isComplete ? Colors.green.shade700 : colorScheme.primary,
+                  ),
                 ),
               ],
             ),
@@ -420,9 +388,7 @@ class _ImportRecordCard extends StatelessWidget {
                 value: record.progress,
                 minHeight: Dimens.spaceS,
                 backgroundColor: colorScheme.surfaceContainerHighest,
-                valueColor: AlwaysStoppedAnimation(
-                  isComplete ? Colors.green : colorScheme.primary,
-                ),
+                valueColor: AlwaysStoppedAnimation(isComplete ? Colors.green : colorScheme.primary),
               ),
             ),
             const SizedBox(height: Dimens.spaceL),
@@ -445,10 +411,7 @@ class _ImportRecordCard extends StatelessWidget {
                     height: Dimens.buttonHeightM,
                     child: FilledButton.icon(
                       onPressed: onOpen,
-                      icon: Icon(
-                        isComplete ? Icons.send : Icons.play_arrow,
-                        size: Dimens.iconM,
-                      ),
+                      icon: Icon(isComplete ? Icons.send : Icons.play_arrow, size: Dimens.iconM),
                       label: Text(
                         isComplete ? 'Exporter' : 'Reprendre',
                         style: const TextStyle(fontWeight: FontWeight.bold),

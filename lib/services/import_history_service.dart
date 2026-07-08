@@ -14,8 +14,7 @@ class ImportHistoryService extends ChangeNotifier {
 
   List<ImportRecord> _history = [];
 
-  List<ImportRecord> get history =>
-      [..._history]..sort((a, b) => b.importedAt.compareTo(a.importedAt));
+  List<ImportRecord> get history => [..._history]..sort((a, b) => b.importedAt.compareTo(a.importedAt));
 
   Future<void> load() async {
     try {
@@ -23,19 +22,14 @@ class ImportHistoryService extends ChangeNotifier {
       if (!await file.exists()) return;
       final content = await file.readAsString(encoding: utf8);
       final List<dynamic> list = jsonDecode(content);
-      _history = list
-          .map((e) => ImportRecord.fromJson(e as Map<String, dynamic>))
-          .toList();
+      _history = list.map((e) => ImportRecord.fromJson(e as Map<String, dynamic>)).toList();
       notifyListeners();
     } catch (e) {
       debugPrint('[ImportHistory] Erreur chargement : $e');
     }
   }
 
-  Future<ImportRecord> addImport({
-    required String csvSourcePath,
-    required List<Expense> expenses,
-  }) async {
+  Future<ImportRecord> addImport({required String csvSourcePath, required List<Expense> expenses}) async {
     final id = DateTime.now().millisecondsSinceEpoch.toString();
     final originalFileName = csvSourcePath.split('/').last;
     final backupRelativePath = '$_importsFolder/${id}_$originalFileName';
@@ -96,9 +90,7 @@ class ImportHistoryService extends ChangeNotifier {
     try {
       final file = await ProjectPath.file(_historyFileName);
       await file.writeAsString(
-        const JsonEncoder.withIndent('  ').convert(
-          _history.map((r) => r.toJson()).toList(),
-        ),
+        const JsonEncoder.withIndent('  ').convert(_history.map((r) => r.toJson()).toList()),
         encoding: utf8,
       );
     } catch (e) {

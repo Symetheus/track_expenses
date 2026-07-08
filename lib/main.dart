@@ -16,11 +16,7 @@ void main() async {
   final settingsProvider = SettingsProvider();
   final merchantMemory = MerchantMemoryService();
   final importHistory = ImportHistoryService();
-  await Future.wait([
-    settingsProvider.load(),
-    merchantMemory.load(),
-    importHistory.load(),
-  ]);
+  await Future.wait([settingsProvider.load(), merchantMemory.load(), importHistory.load()]);
 
   runApp(
     MultiProvider(
@@ -28,9 +24,7 @@ void main() async {
         ChangeNotifierProvider.value(value: settingsProvider),
         ChangeNotifierProvider.value(value: merchantMemory),
         ChangeNotifierProvider.value(value: importHistory),
-        ChangeNotifierProvider(
-          create: (_) => ExpensesProvider(merchantMemory, importHistory),
-        ),
+        ChangeNotifierProvider(create: (_) => ExpensesProvider(merchantMemory, importHistory)),
         ChangeNotifierProvider(create: (_) => AnalyticsProvider()),
       ],
       child: const MyApp(),
@@ -47,39 +41,20 @@ class MyApp extends StatelessWidget {
       title: 'SG → Notion',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF1A1A2E),
-          brightness: Brightness.light,
-        ),
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF1A1A2E), brightness: Brightness.light),
         useMaterial3: true,
         fontFamily: 'SF Pro Display',
-        appBarTheme: const AppBarTheme(
-          centerTitle: false,
-          elevation: 0,
-          scrolledUnderElevation: 1,
-        ),
-        cardTheme: const CardThemeData(
-          elevation: 1,
-        ),
+        appBarTheme: const AppBarTheme(centerTitle: false, elevation: 0, scrolledUnderElevation: 1),
+        cardTheme: const CardThemeData(elevation: 1),
       ),
       darkTheme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF6C63FF),
-          brightness: Brightness.dark,
-        ),
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF6C63FF), brightness: Brightness.dark),
         useMaterial3: true,
-        appBarTheme: const AppBarTheme(
-          centerTitle: false,
-          elevation: 0,
-          scrolledUnderElevation: 1,
-        ),
+        appBarTheme: const AppBarTheme(centerTitle: false, elevation: 0, scrolledUnderElevation: 1),
       ),
       themeMode: ThemeMode.system,
       initialRoute: '/',
-      routes: {
-        '/': (_) => const MainShell(),
-        '/settings': (_) => const SettingsScreen(),
-      },
+      routes: {'/': (_) => const MainShell(), '/settings': (_) => const SettingsScreen()},
     );
   }
 }

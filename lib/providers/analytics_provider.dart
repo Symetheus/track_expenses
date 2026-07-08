@@ -19,8 +19,7 @@ class AnalyticsProvider extends ChangeNotifier {
   List<Expense> get _debits => _expenses.where((e) => e.amount != 0).toList();
 
   List<int> get availableYears {
-    final years = _debits.map((e) => e.date.year).toSet().toList()
-      ..sort((a, b) => b.compareTo(a));
+    final years = _debits.map((e) => e.date.year).toSet().toList()..sort((a, b) => b.compareTo(a));
     return years;
   }
 
@@ -49,16 +48,13 @@ class AnalyticsProvider extends ChangeNotifier {
     return map;
   }
 
-  double get totalSpending =>
-      filteredExpenses.fold(0.0, (s, e) => s + e.amount.abs());
+  double get totalSpending => filteredExpenses.fold(0.0, (s, e) => s + e.amount.abs());
 
   int get transactionCount => filteredExpenses.length;
 
   String? get topCategory {
     if (categoryTotals.isEmpty) return null;
-    return categoryTotals.entries
-        .reduce((a, b) => a.value > b.value ? a : b)
-        .key;
+    return categoryTotals.entries.reduce((a, b) => a.value > b.value ? a : b).key;
   }
 
   /// Charge les données depuis Notion
@@ -92,5 +88,3 @@ class AnalyticsProvider extends ChangeNotifier {
     notifyListeners();
   }
 }
-
-

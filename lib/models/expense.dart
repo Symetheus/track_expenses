@@ -27,6 +27,7 @@ class Expense {
 
   bool get isDebit => amount < 0;
   bool get isComplete => category != null && isReviewed && !isIgnored;
+
   /// Compte dans la progression (révisé manuellement ou ignoré)
   bool get isProcessed => isReviewed || isIgnored;
 
@@ -38,38 +39,38 @@ class Expense {
   }
 
   Map<String, String> toNotionCsvRow() => {
-        'Date': formattedDate,
-        'Nom': cleanName,
-        'Montant': amount.toStringAsFixed(2).replaceAll('.', ','),
-        'Catégorie': category ?? '',
-        'Moyen de paiement': paymentMethod,
-      };
+    'Date': formattedDate,
+    'Nom': cleanName,
+    'Montant': amount.toStringAsFixed(2).replaceAll('.', ','),
+    'Catégorie': category ?? '',
+    'Moyen de paiement': paymentMethod,
+  };
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'rawLabel': rawLabel,
-        'cleanName': cleanName,
-        'date': date.toIso8601String(),
-        'amount': amount,
-        'category': category,
-        'paymentMethod': paymentMethod,
-        'isReviewed': isReviewed,
-        'sentToNotion': sentToNotion,
-        'isIgnored': isIgnored,
-      };
+    'id': id,
+    'rawLabel': rawLabel,
+    'cleanName': cleanName,
+    'date': date.toIso8601String(),
+    'amount': amount,
+    'category': category,
+    'paymentMethod': paymentMethod,
+    'isReviewed': isReviewed,
+    'sentToNotion': sentToNotion,
+    'isIgnored': isIgnored,
+  };
 
   factory Expense.fromJson(Map<String, dynamic> j) => Expense(
-        id: j['id'] as String,
-        rawLabel: j['rawLabel'] as String,
-        cleanName: j['cleanName'] as String,
-        date: DateTime.parse(j['date'] as String),
-        amount: (j['amount'] as num).toDouble(),
-        category: j['category'] as String?,
-        paymentMethod: j['paymentMethod'] as String,
-        isReviewed: j['isReviewed'] as bool,
-        sentToNotion: (j['sentToNotion'] as bool?) ?? false,
-        isIgnored: (j['isIgnored'] as bool?) ?? false,
-      );
+    id: j['id'] as String,
+    rawLabel: j['rawLabel'] as String,
+    cleanName: j['cleanName'] as String,
+    date: DateTime.parse(j['date'] as String),
+    amount: (j['amount'] as num).toDouble(),
+    category: j['category'] as String?,
+    paymentMethod: j['paymentMethod'] as String,
+    isReviewed: j['isReviewed'] as bool,
+    sentToNotion: (j['sentToNotion'] as bool?) ?? false,
+    isIgnored: (j['isIgnored'] as bool?) ?? false,
+  );
 
   Expense copyWith({
     String? cleanName,
@@ -79,15 +80,15 @@ class Expense {
     bool? sentToNotion,
     bool? isIgnored,
   }) => Expense(
-        id: id,
-        rawLabel: rawLabel,
-        cleanName: cleanName ?? this.cleanName,
-        date: date,
-        amount: amount,
-        category: category ?? this.category,
-        paymentMethod: paymentMethod ?? this.paymentMethod,
-        isReviewed: isReviewed ?? this.isReviewed,
-        sentToNotion: sentToNotion ?? this.sentToNotion,
-        isIgnored: isIgnored ?? this.isIgnored,
-      );
+    id: id,
+    rawLabel: rawLabel,
+    cleanName: cleanName ?? this.cleanName,
+    date: date,
+    amount: amount,
+    category: category ?? this.category,
+    paymentMethod: paymentMethod ?? this.paymentMethod,
+    isReviewed: isReviewed ?? this.isReviewed,
+    sentToNotion: sentToNotion ?? this.sentToNotion,
+    isIgnored: isIgnored ?? this.isIgnored,
+  );
 }

@@ -33,12 +33,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
     super.initState();
     final settings = context.read<SettingsProvider>().settings;
     _tokenController = TextEditingController(text: settings.notionToken);
-    _dbIdController  = TextEditingController(text: settings.notionDatabaseId);
-    _colNameController     = TextEditingController(text: settings.notionColumns.name);
-    _colDateController     = TextEditingController(text: settings.notionColumns.date);
-    _colAmountController   = TextEditingController(text: settings.notionColumns.amount);
+    _dbIdController = TextEditingController(text: settings.notionDatabaseId);
+    _colNameController = TextEditingController(text: settings.notionColumns.name);
+    _colDateController = TextEditingController(text: settings.notionColumns.date);
+    _colAmountController = TextEditingController(text: settings.notionColumns.amount);
     _colCategoryController = TextEditingController(text: settings.notionColumns.category);
-    _colPaymentController  = TextEditingController(text: settings.notionColumns.paymentMethod);
+    _colPaymentController = TextEditingController(text: settings.notionColumns.paymentMethod);
   }
 
   @override
@@ -56,14 +56,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Future<void> _saveNotionConfig() async {
     final token = _tokenController.text.trim();
     final databaseId = _dbIdController.text.trim();
-    await context.read<SettingsProvider>().updateNotionConfig(
-          token: token,
-          databaseId: databaseId,
-        );
+    await context.read<SettingsProvider>().updateNotionConfig(token: token, databaseId: databaseId);
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('✅ Configuration sauvegardée')),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('✅ Configuration sauvegardée')));
     }
   }
 
@@ -73,10 +68,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _testResult = null;
     });
     try {
-      final service = NotionService(
-        token: _tokenController.text.trim(),
-        databaseId: _dbIdController.text.trim(),
-      );
+      final service = NotionService(token: _tokenController.text.trim(), databaseId: _dbIdController.text.trim());
       await service.testConnection();
       setState(() {
         _testSuccess = true;
@@ -105,14 +97,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
           onSubmitted: (v) => Navigator.of(ctx).pop(v.trim()),
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('Annuler'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(ctx).pop(controller.text.trim()),
-            child: const Text('Ajouter'),
-          ),
+          TextButton(onPressed: () => Navigator.of(ctx).pop(), child: const Text('Annuler')),
+          FilledButton(onPressed: () => Navigator.of(ctx).pop(controller.text.trim()), child: const Text('Ajouter')),
         ],
       ),
     );
@@ -141,8 +127,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 children: [
                   Text(
                     'Configure ton intégration Notion pour envoyer les dépenses directement.',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: colorScheme.onSurfaceVariant),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant),
                   ),
                   const SizedBox(height: Dimens.spaceXl),
                   TextField(
@@ -182,9 +167,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                       child: Text(
                         _testResult!,
-                        style: TextStyle(
-                          color: _testSuccess ? Colors.green.shade800 : colorScheme.onErrorContainer,
-                        ),
+                        style: TextStyle(color: _testSuccess ? Colors.green.shade800 : colorScheme.onErrorContainer),
                       ),
                     ),
                   Row(
@@ -229,8 +212,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 children: [
                   Text(
                     'Gère les catégories disponibles pour classer tes dépenses.',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: colorScheme.onSurfaceVariant),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant),
                   ),
                   const SizedBox(height: Dimens.spaceL),
                   Wrap(
@@ -247,8 +229,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               context: context,
                               builder: (ctx) => AlertDialog(
                                 title: Text('Supprimer "$cat" ?'),
-                                content: const Text(
-                                  'Les dépenses avec cette catégorie ne seront pas modifiées.'),
+                                content: const Text('Les dépenses avec cette catégorie ne seront pas modifiées.'),
                                 actions: [
                                   TextButton(
                                     onPressed: () => Navigator.of(ctx).pop(false),
@@ -314,8 +295,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           children: [
             Text(
               'Renseigne les noms exacts de tes colonnes dans la base Notion\n(respecte les majuscules et accents).',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: colorScheme.onSurfaceVariant),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant),
             ),
             const SizedBox(height: Dimens.spaceXl),
             _colField('Nom / Titre de la dépense', _colNameController, Icons.title),
@@ -356,17 +336,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Future<void> _saveColumns() async {
     final columns = NotionColumns(
-      name:          _colNameController.text.trim(),
-      date:          _colDateController.text.trim(),
-      amount:        _colAmountController.text.trim(),
-      category:      _colCategoryController.text.trim(),
+      name: _colNameController.text.trim(),
+      date: _colDateController.text.trim(),
+      amount: _colAmountController.text.trim(),
+      category: _colCategoryController.text.trim(),
       paymentMethod: _colPaymentController.text.trim(),
     );
     await context.read<SettingsProvider>().updateNotionColumns(columns);
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('✅ Noms de colonnes sauvegardés')),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('✅ Noms de colonnes sauvegardés')));
     }
   }
 
@@ -383,8 +361,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           children: [
             Text(
               'L\'app mémorise tes choix de catégories par marchand pour les prochains imports.',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: colorScheme.onSurfaceVariant),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant),
             ),
             const SizedBox(height: Dimens.spaceM),
             Row(
@@ -407,49 +384,52 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             if (mappings.isNotEmpty) ...[
               const Divider(height: 20),
-              ...mappings.entries.map((entry) => Padding(
-                    padding: const EdgeInsets.symmetric(vertical: Dimens.spaceXxs),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Text(entry.key,
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                    fontWeight: FontWeight.w500)),
+              ...mappings.entries.map(
+                (entry) => Padding(
+                  padding: const EdgeInsets.symmetric(vertical: Dimens.spaceXxs),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          entry.key,
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w500),
                         ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: Dimens.spaceM, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: colorScheme.primaryContainer,
-                            borderRadius: BorderRadius.circular(Dimens.radiusL),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: Dimens.spaceM, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: colorScheme.primaryContainer,
+                          borderRadius: BorderRadius.circular(Dimens.radiusL),
+                        ),
+                        child: Text(
+                          entry.value,
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: colorScheme.onPrimaryContainer,
+                            fontWeight: FontWeight.w500,
                           ),
-                          child: Text(
-                            entry.value,
-                            style: TextStyle(
-                              fontSize: 11,
-                              color: colorScheme.onPrimaryContainer,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
                         ),
-                        const SizedBox(width: Dimens.spaceXs),
-                        IconButton(
-                          icon: const Icon(Icons.close, size: Dimens.iconXs),
-                          padding: EdgeInsets.zero,
-                          constraints: const BoxConstraints(minWidth: 24, minHeight: 24),
-                          onPressed: () => memory.removeEntry(entry.key),
-                          tooltip: 'Supprimer cette association',
-                        ),
-                      ],
-                    ),
-                  )),
+                      ),
+                      const SizedBox(width: Dimens.spaceXs),
+                      IconButton(
+                        icon: const Icon(Icons.close, size: Dimens.iconXs),
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(minWidth: 24, minHeight: 24),
+                        onPressed: () => memory.removeEntry(entry.key),
+                        tooltip: 'Supprimer cette association',
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ] else
               Padding(
                 padding: const EdgeInsets.only(top: Dimens.spaceM),
                 child: Text(
                   'Aucune association mémorisée pour l\'instant.',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: colorScheme.outline, fontStyle: FontStyle.italic),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodySmall?.copyWith(color: colorScheme.outline, fontStyle: FontStyle.italic),
                 ),
               ),
           ],
@@ -468,14 +448,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
           'Les prochains imports n\'auront plus de suggestions apprises.',
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('Annuler'),
-          ),
+          TextButton(onPressed: () => Navigator.of(ctx).pop(), child: const Text('Annuler')),
           FilledButton(
-            style: FilledButton.styleFrom(
-              backgroundColor: Theme.of(ctx).colorScheme.error,
-            ),
+            style: FilledButton.styleFrom(backgroundColor: Theme.of(ctx).colorScheme.error),
             onPressed: () {
               Navigator.of(ctx).pop();
               for (final key in memory.allMappings.keys.toList()) {
@@ -496,10 +471,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
         const SizedBox(width: Dimens.spaceM),
         Text(
           title,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: Theme.of(context).colorScheme.primary,
-              ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary),
         ),
       ],
     );
@@ -513,15 +487,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
         children: [
           SizedBox(
             width: Dimens.infoLabelWidthSettings,
-            child: Text(label,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.bold)),
+            child: Text(label, style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.bold)),
           ),
-          Expanded(
-            child: Text(value, style: Theme.of(context).textTheme.bodySmall),
-          ),
+          Expanded(child: Text(value, style: Theme.of(context).textTheme.bodySmall)),
         ],
       ),
     );
   }
 }
-

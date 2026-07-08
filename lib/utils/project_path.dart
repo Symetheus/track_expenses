@@ -26,4 +26,3 @@ abstract final class ProjectPath {
     return File('${dir.path}/$fileName');
   }
 }
-

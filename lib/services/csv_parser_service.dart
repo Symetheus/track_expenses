@@ -32,18 +32,14 @@ class CsvParserService {
 
   static List<Expense> parseContent(String content) {
     // Normaliser les fins de ligne
-    final lines = content
-        .replaceAll('\r\n', '\n')
-        .replaceAll('\r', '\n')
-        .split('\n');
+    final lines = content.replaceAll('\r\n', '\n').replaceAll('\r', '\n').split('\n');
 
     // ── Trouver la ligne d'en-tête des colonnes ────────────────────────────
     // C'est la première ligne qui contient "Date" ET "Libell" (accents perdus ok)
     int headerIndex = -1;
     for (int i = 0; i < lines.length; i++) {
       final l = lines[i].toLowerCase();
-      if ((l.contains('date') && l.contains('libell')) ||
-          (l.contains('date') && l.contains('montant'))) {
+      if ((l.contains('date') && l.contains('libell')) || (l.contains('date') && l.contains('montant'))) {
         headerIndex = i;
         break;
       }
@@ -62,14 +58,12 @@ class CsvParserService {
     final separator = headerLine.contains(';') ? ';' : ',';
 
     // Parser l'en-tête pour trouver les indices de colonnes
-    final headers = _splitLine(headerLine, separator)
-        .map((h) => _normalize(h))
-        .toList();
+    final headers = _splitLine(headerLine, separator).map((h) => _normalize(h)).toList();
 
-    final dateIdx    = _colIndex(headers, ['date']);
-    final labelIdx   = _colIndex(headers, ['libell']);
-    final detailIdx  = _colIndex(headers, ['detail', 'criture', 'ecriture']);
-    final amountIdx  = _colIndex(headers, ['montant', 'amount']);
+    final dateIdx = _colIndex(headers, ['date']);
+    final labelIdx = _colIndex(headers, ['libell']);
+    final detailIdx = _colIndex(headers, ['detail', 'criture', 'ecriture']);
+    final amountIdx = _colIndex(headers, ['montant', 'amount']);
     // Devise est optionnelle
 
     if (dateIdx == -1 || amountIdx == -1) {
@@ -105,12 +99,12 @@ class CsvParserService {
       }
 
       // Libellé court (col Libellé) + Détail long (col Détail)
-      final rawLabel  = _cell(cells, labelIdx).trim();
+      final rawLabel = _cell(cells, labelIdx).trim();
       final rawDetail = detailIdx != -1 ? _cell(cells, detailIdx).trim() : rawLabel;
 
       // Montant (format français : "-47,00" ou "2975,71")
       final rawAmount = _cell(cells, amountIdx);
-      final amount    = _parseAmount(rawAmount);
+      final amount = _parseAmount(rawAmount);
       if (amount == 0.0 && rawLabel.isEmpty) continue;
 
       // Moyen de paiement (déduit du libellé)
@@ -122,16 +116,18 @@ class CsvParserService {
       // Suggestion de catégorie
       final suggested = CategorySuggestionService.suggest('$rawLabel $rawDetail');
 
-      expenses.add(Expense(
-        id: 'exp_${idCounter++}',
-        rawLabel: rawDetail.isNotEmpty ? rawDetail : rawLabel,
-        cleanName: cleanName,
-        date: date,
-        amount: amount,
-        category: suggested,
-        paymentMethod: paymentMethod,
-        isReviewed: false,
-      ));
+      expenses.add(
+        Expense(
+          id: 'exp_${idCounter++}',
+          rawLabel: rawDetail.isNotEmpty ? rawDetail : rawLabel,
+          cleanName: cleanName,
+          date: date,
+          amount: amount,
+          category: suggested,
+          paymentMethod: paymentMethod,
+          isReviewed: false,
+        ),
+      );
     }
 
     if (expenses.isEmpty) {
@@ -152,7 +148,7 @@ class CsvParserService {
   static List<String> _splitLine(String line, String sep) {
     // Gère le cas ="valeur" (format Excel)
     final result = <String>[];
-    final buf    = StringBuffer();
+    final buf = StringBuffer();
     bool inQuotes = false;
 
     for (int i = 0; i < line.length; i++) {
@@ -214,13 +210,13 @@ class CsvParserService {
   /// Détecte le moyen de paiement depuis le libellé court SG.
   static String _detectPaymentMethod(String label) {
     final u = label.toUpperCase();
-    if (u.contains('CARTE'))       return 'Carte bancaire';
-    if (u.contains('VIR INST'))    return 'Virement';
-    if (u.contains('VIR RECU'))    return 'Virement';
-    if (u.contains('VIR '))        return 'Virement';
+    if (u.contains('CARTE')) return 'Carte bancaire';
+    if (u.contains('VIR INST')) return 'Virement';
+    if (u.contains('VIR RECU')) return 'Virement';
+    if (u.contains('VIR ')) return 'Virement';
     if (u.contains('PRELEVEMENT')) return 'Prélèvement';
-    if (u.contains('COTISATION'))  return 'Prélèvement';
-    if (u.contains('VIREMENT'))    return 'Virement';
+    if (u.contains('COTISATION')) return 'Prélèvement';
+    if (u.contains('VIREMENT')) return 'Virement';
     if (u.contains('CHEQUE') || u.contains('CHQ')) return 'Chèque';
     if (u.contains('RETRAIT') || u.contains('DAB')) return 'Espèces';
     return 'Carte bancaire';
@@ -262,7 +258,7 @@ class CsvParserService {
     // 3) Cas PRELEVEMENT / COTISATION : extraire "MOTIF:" ou "DE:"
     if (RegExp(r'^PRELEVEMENT|^COTISATION', caseSensitive: false).hasMatch(s)) {
       final motifMatch = RegExp(r'MOTIF:\s*(.+?)(?:\s+\d|$)', caseSensitive: false).firstMatch(s);
-      final deMatch    = RegExp(r'DE:\s*(.+?)(?:\s+(?:ID:|MOTIF:|REF:)|$)', caseSensitive: false).firstMatch(s);
+      final deMatch = RegExp(r'DE:\s*(.+?)(?:\s+(?:ID:|MOTIF:|REF:)|$)', caseSensitive: false).firstMatch(s);
       if (motifMatch != null) {
         s = motifMatch.group(1)!.trim();
       } else if (deMatch != null) {
@@ -289,14 +285,17 @@ class CsvParserService {
 
     // 8) Capitaliser proprement
     if (s.isNotEmpty) {
-      s = s.split(' ').map((word) {
-        if (word.isEmpty) return word;
-        // Garder les sigles tout en majuscules courts (2-4 lettres)
-        if (word.length <= 4 && word == word.toUpperCase() && RegExp(r'^[A-Z]+$').hasMatch(word)) {
-          return word;
-        }
-        return word[0].toUpperCase() + word.substring(1).toLowerCase();
-      }).join(' ');
+      s = s
+          .split(' ')
+          .map((word) {
+            if (word.isEmpty) return word;
+            // Garder les sigles tout en majuscules courts (2-4 lettres)
+            if (word.length <= 4 && word == word.toUpperCase() && RegExp(r'^[A-Z]+$').hasMatch(word)) {
+              return word;
+            }
+            return word[0].toUpperCase() + word.substring(1).toLowerCase();
+          })
+          .join(' ');
     }
 
     return s.isEmpty ? _cleanFallback(fallback) : s;
@@ -307,10 +306,12 @@ class CsvParserService {
     var s = raw.replaceAll(RegExp(r'^CARTE\s+\w+\s+\d{2}/\d{2}\s*', caseSensitive: false), '');
     s = s.replaceAll(RegExp(r'^\d+\s*'), '').trim();
     if (s.isEmpty) return raw;
-    return s.split(' ').map((w) {
-      if (w.isEmpty) return w;
-      return w[0].toUpperCase() + w.substring(1).toLowerCase();
-    }).join(' ');
+    return s
+        .split(' ')
+        .map((w) {
+          if (w.isEmpty) return w;
+          return w[0].toUpperCase() + w.substring(1).toLowerCase();
+        })
+        .join(' ');
   }
 }
-

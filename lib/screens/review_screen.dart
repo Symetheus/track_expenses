@@ -32,12 +32,12 @@ class _ReviewScreenState extends State<ReviewScreen> {
   }
 
   List<Expense> _applyFilter(List<Expense> all) => switch (_filter) {
-        ReviewFilter.all      => all,
-        ReviewFilter.toReview => all.where((e) => !e.isProcessed).toList(),
-        ReviewFilter.reviewed => all.where((e) => e.isReviewed && !e.sentToNotion && !e.isIgnored).toList(),
-        ReviewFilter.sent     => all.where((e) => e.sentToNotion).toList(),
-        ReviewFilter.ignored  => all.where((e) => e.isIgnored).toList(),
-      };
+    ReviewFilter.all => all,
+    ReviewFilter.toReview => all.where((e) => !e.isProcessed).toList(),
+    ReviewFilter.reviewed => all.where((e) => e.isReviewed && !e.sentToNotion && !e.isIgnored).toList(),
+    ReviewFilter.sent => all.where((e) => e.sentToNotion).toList(),
+    ReviewFilter.ignored => all.where((e) => e.isIgnored).toList(),
+  };
 
   void _toggleExpand(String id) {
     setState(() => _expandedId = _expandedId == id ? null : id);
@@ -49,11 +49,17 @@ class _ReviewScreenState extends State<ReviewScreen> {
     final currentIdx = expenses.indexWhere((e) => e.id == _expandedId);
     Expense? next;
     for (int i = currentIdx + 1; i < expenses.length; i++) {
-      if (!expenses[i].isProcessed) { next = expenses[i]; break; }
+      if (!expenses[i].isProcessed) {
+        next = expenses[i];
+        break;
+      }
     }
     if (next == null) {
       for (final e in expenses) {
-        if (!e.isProcessed) { next = e; break; }
+        if (!e.isProcessed) {
+          next = e;
+          break;
+        }
       }
     }
     setState(() => _expandedId = next?.id);
@@ -124,10 +130,7 @@ class _ReviewScreenState extends State<ReviewScreen> {
           'Cette action ne peut pas être annulée.',
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Annuler'),
-          ),
+          TextButton(onPressed: () => Navigator.of(ctx).pop(false), child: const Text('Annuler')),
           FilledButton.icon(
             onPressed: () => Navigator.of(ctx).pop(true),
             icon: const Icon(Icons.send),
@@ -164,14 +167,9 @@ class _ReviewScreenState extends State<ReviewScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Notion non configuré'),
-        content: const Text(
-          'Configure ton token Notion et l\'ID de ta base dans les paramètres.',
-        ),
+        content: const Text('Configure ton token Notion et l\'ID de ta base dans les paramètres.'),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('Plus tard'),
-          ),
+          TextButton(onPressed: () => Navigator.of(ctx).pop(), child: const Text('Plus tard')),
           FilledButton(
             onPressed: () {
               Navigator.of(ctx).pop();
@@ -214,17 +212,14 @@ class _ReviewScreenState extends State<ReviewScreen> {
           onPressed: () {
             showDialog(
               context: context,
-                builder: (ctx) => AlertDialog(
+              builder: (ctx) => AlertDialog(
                 title: const Text('Quitter la révision ?'),
                 content: const Text(
                   'Ta progression est sauvegardée automatiquement.\n'
                   'Tu pourras reprendre depuis l\'accueil.',
                 ),
                 actions: [
-                  TextButton(
-                    onPressed: () => Navigator.of(ctx).pop(),
-                    child: const Text('Rester'),
-                  ),
+                  TextButton(onPressed: () => Navigator.of(ctx).pop(), child: const Text('Rester')),
                   FilledButton(
                     onPressed: () async {
                       Navigator.of(ctx).pop();
@@ -239,10 +234,7 @@ class _ReviewScreenState extends State<ReviewScreen> {
           },
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: () => Navigator.of(context).pushNamed('/settings'),
-          ),
+          IconButton(icon: const Icon(Icons.settings), onPressed: () => Navigator.of(context).pushNamed('/settings')),
         ],
       ),
       body: Column(
@@ -254,11 +246,11 @@ class _ReviewScreenState extends State<ReviewScreen> {
           _FilterBar(
             filter: _filter,
             counts: {
-              ReviewFilter.all:      total,
+              ReviewFilter.all: total,
               ReviewFilter.toReview: expenses.where((e) => !e.isProcessed).length,
               ReviewFilter.reviewed: expenses.where((e) => e.isReviewed && !e.sentToNotion && !e.isIgnored).length,
-              ReviewFilter.sent:     provider.sentCount,
-              ReviewFilter.ignored:  provider.ignoredCount,
+              ReviewFilter.sent: provider.sentCount,
+              ReviewFilter.ignored: provider.ignoredCount,
             },
             onChanged: (f) => setState(() {
               _filter = f;
@@ -267,8 +259,7 @@ class _ReviewScreenState extends State<ReviewScreen> {
           ),
 
           // Indicateur export en cours
-          if (_isExporting)
-            LinearProgressIndicator(backgroundColor: colorScheme.surfaceContainerHighest),
+          if (_isExporting) LinearProgressIndicator(backgroundColor: colorScheme.surfaceContainerHighest),
 
           // Liste filtrée
           Expanded(
@@ -278,9 +269,7 @@ class _ReviewScreenState extends State<ReviewScreen> {
                 child: filtered.isEmpty
                     ? Center(
                         child: Text(
-                          _filter == ReviewFilter.all
-                              ? 'Aucune dépense à afficher.'
-                              : 'Aucune dépense dans ce filtre.',
+                          _filter == ReviewFilter.all ? 'Aucune dépense à afficher.' : 'Aucune dépense dans ce filtre.',
                           style: Theme.of(context).textTheme.bodyLarge,
                         ),
                       )
@@ -306,8 +295,7 @@ class _ReviewScreenState extends State<ReviewScreen> {
       ),
       // Barre d'export fixe en bas
       bottomNavigationBar: Container(
-        padding: const EdgeInsets.symmetric(
-            horizontal: Dimens.spaceXl, vertical: Dimens.spaceL),
+        padding: const EdgeInsets.symmetric(horizontal: Dimens.spaceXl, vertical: Dimens.spaceL),
         decoration: BoxDecoration(
           color: colorScheme.surfaceContainer,
           border: Border(top: BorderSide(color: colorScheme.outlineVariant)),
@@ -328,15 +316,11 @@ class _ReviewScreenState extends State<ReviewScreen> {
               children: [
                 Text(
                   '$complete à envoyer',
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 Text(
                   '${provider.sentCount} déjà envoyée${provider.sentCount > 1 ? 's' : ''} · $total au total',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: colorScheme.outline,
-                      ),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(color: colorScheme.outline),
                 ),
               ],
             ),
@@ -368,18 +352,14 @@ class _FilterBar extends StatelessWidget {
   final Map<ReviewFilter, int> counts;
   final void Function(ReviewFilter) onChanged;
 
-  const _FilterBar({
-    required this.filter,
-    required this.counts,
-    required this.onChanged,
-  });
+  const _FilterBar({required this.filter, required this.counts, required this.onChanged});
 
   static const _labels = {
-    ReviewFilter.all:      ('Tout',      null),
+    ReviewFilter.all: ('Tout', null),
     ReviewFilter.toReview: ('À réviser', Colors.orange),
-    ReviewFilter.reviewed: ('Révisés',   Colors.green),
-    ReviewFilter.sent:     ('Envoyés',   Colors.blue),
-    ReviewFilter.ignored:  ('Ignorés',   Colors.grey),
+    ReviewFilter.reviewed: ('Révisés', Colors.green),
+    ReviewFilter.sent: ('Envoyés', Colors.blue),
+    ReviewFilter.ignored: ('Ignorés', Colors.grey),
   };
 
   @override
@@ -387,8 +367,7 @@ class _FilterBar extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     return Container(
       color: colorScheme.surfaceContainer,
-      padding: const EdgeInsets.symmetric(
-          horizontal: Dimens.spaceXl, vertical: Dimens.spaceM),
+      padding: const EdgeInsets.symmetric(horizontal: Dimens.spaceXl, vertical: Dimens.spaceM),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
@@ -403,9 +382,7 @@ class _FilterBar extends StatelessWidget {
               selected: isSelected,
               showCheckmark: false,
               onSelected: (_) => onChanged(f),
-              selectedColor: color != null
-                  ? Color.lerp(color, Colors.white, 0.7)
-                  : colorScheme.primaryContainer,
+              selectedColor: color != null ? Color.lerp(color, Colors.white, 0.7) : colorScheme.primaryContainer,
               labelStyle: TextStyle(
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                 fontSize: 12,
@@ -418,4 +395,3 @@ class _FilterBar extends StatelessWidget {
     );
   }
 }
-

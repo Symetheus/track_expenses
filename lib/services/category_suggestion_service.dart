@@ -2,15 +2,7 @@
 /// La suggestion est proposée à l'utilisateur qui peut la valider ou la changer.
 class CategorySuggestionService {
   static const Map<String, List<String>> _keywords = {
-    'Loyer': [
-      'loyer',
-      'bail',
-      'immo',
-      'immobilier',
-      'habitation',
-      'proprietaire',
-      'locataire',
-    ],
+    'Loyer': ['loyer', 'bail', 'immo', 'immobilier', 'habitation', 'proprietaire', 'locataire'],
     'Abonnement': [
       'free',
       'sfr',
@@ -276,4 +268,3 @@ class CategorySuggestionService {
     return null;
   }
 }
-

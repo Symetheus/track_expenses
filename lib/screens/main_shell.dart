@@ -23,16 +23,14 @@ class _MainShellState extends State<MainShell> {
           // ── Rail de navigation ────────────────────────────────────
           NavigationRail(
             selectedIndex: _selectedIndex,
-            onDestinationSelected: (i) =>
-                setState(() => _selectedIndex = i),
+            onDestinationSelected: (i) => setState(() => _selectedIndex = i),
             labelType: NavigationRailLabelType.all,
             leading: Padding(
               padding: const EdgeInsets.symmetric(vertical: 8),
               child: IconButton(
                 icon: const Icon(Icons.settings_outlined),
                 tooltip: 'Paramètres',
-                onPressed: () =>
-                    Navigator.of(context).pushNamed('/settings'),
+                onPressed: () => Navigator.of(context).pushNamed('/settings'),
               ),
             ),
             destinations: const [
@@ -53,17 +51,10 @@ class _MainShellState extends State<MainShell> {
 
           // ── Contenu de l'onglet actif ─────────────────────────────
           Expanded(
-            child: IndexedStack(
-              index: _selectedIndex,
-              children: const [
-                HomeScreen(),
-                AnalyticsScreen(),
-              ],
-            ),
+            child: IndexedStack(index: _selectedIndex, children: const [HomeScreen(), AnalyticsScreen()]),
           ),
         ],
       ),
     );
   }
 }
-

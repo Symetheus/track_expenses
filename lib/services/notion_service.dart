@@ -13,24 +13,18 @@ class NotionService {
   final String databaseId;
   final NotionColumns columns;
 
-  NotionService({
-    required this.token,
-    required this.databaseId,
-    NotionColumns? columns,
-  }) : columns = columns ?? const NotionColumns();
+  NotionService({required this.token, required this.databaseId, NotionColumns? columns})
+    : columns = columns ?? const NotionColumns();
 
   Map<String, String> get _headers => {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-        'Notion-Version': _notionVersion,
-      };
+    'Authorization': 'Bearer $token',
+    'Content-Type': 'application/json',
+    'Notion-Version': _notionVersion,
+  };
 
   /// Teste la connexion à Notion (vérifie que la DB est accessible).
   Future<void> testConnection() async {
-    final response = await http.get(
-      Uri.parse('$_baseUrl/databases/$databaseId'),
-      headers: _headers,
-    );
+    final response = await http.get(Uri.parse('$_baseUrl/databases/$databaseId'), headers: _headers);
     if (!_isSuccess(response.statusCode)) {
       final body = jsonDecode(response.body) as Map<String, dynamic>;
       throw Exception(body['message'] ?? 'Erreur Notion (${response.statusCode})');
@@ -52,10 +46,7 @@ class NotionService {
 
   /// Envoie toutes les dépenses de la liste (sans filtrage — la sélection
   /// est de la responsabilité de l'appelant).
-  Future<int> addAllExpenses(
-    List<Expense> expenses, {
-    void Function(int sent, int total)? onProgress,
-  }) async {
+  Future<int> addAllExpenses(List<Expense> expenses, {void Function(int sent, int total)? onProgress}) async {
     int sent = 0;
     for (final expense in expenses) {
       await addExpense(expense);
@@ -116,9 +107,7 @@ class NotionService {
       // Nom
       final nameProp = props[columns.name] as Map<String, dynamic>?;
       final titleList = nameProp?['title'] as List?;
-      final name = (titleList?.isNotEmpty == true)
-          ? ((titleList!.first as Map)['plain_text'] as String? ?? '')
-          : '';
+      final name = (titleList?.isNotEmpty == true) ? ((titleList!.first as Map)['plain_text'] as String? ?? '') : '';
 
       // Date
       final dateProp = props[columns.date] as Map<String, dynamic>?;
@@ -136,8 +125,7 @@ class NotionService {
 
       // Moyen de paiement
       final payProp = props[columns.paymentMethod] as Map<String, dynamic>?;
-      final paymentMethod =
-          (payProp?['select'] as Map?)?['name'] as String? ?? '';
+      final paymentMethod = (payProp?['select'] as Map?)?['name'] as String? ?? '';
 
       return Expense(
         id: page['id'] as String,
@@ -158,25 +146,27 @@ class NotionService {
   bool _isSuccess(int statusCode) => statusCode >= 200 && statusCode < 300;
 
   Map<String, dynamic> _buildPageBody(Expense expense) => {
-        'parent': {'database_id': databaseId},
-        'properties': {
-          columns.name: {
-            'title': [
-              {'text': {'content': expense.cleanName}}
-            ]
+    'parent': {'database_id': databaseId},
+    'properties': {
+      columns.name: {
+        'title': [
+          {
+            'text': {'content': expense.cleanName},
           },
-          columns.date: {
-            'date': {'start': _toIsoDate(expense.date)}
-          },
-          columns.amount: {'number': expense.amount},
-          columns.category: {
-            'select': {'name': expense.category ?? ''}
-          },
-          columns.paymentMethod: {
-            'select': {'name': expense.paymentMethod}
-          },
-        },
-      };
+        ],
+      },
+      columns.date: {
+        'date': {'start': _toIsoDate(expense.date)},
+      },
+      columns.amount: {'number': expense.amount},
+      columns.category: {
+        'select': {'name': expense.category ?? ''},
+      },
+      columns.paymentMethod: {
+        'select': {'name': expense.paymentMethod},
+      },
+    },
+  };
 
   String _toIsoDate(DateTime date) =>
       '${date.year.toString().padLeft(4, '0')}-'

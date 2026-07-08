@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:flutter/foundation.dart';
 import '../utils/project_path.dart';
 
@@ -57,21 +56,13 @@ class MerchantMemoryService extends ChangeNotifier {
   Future<void> _persist() async {
     try {
       final file = await ProjectPath.file(_fileName);
-      final sorted = Map.fromEntries(
-        _memory.entries.toList()..sort((a, b) => a.key.compareTo(b.key)),
-      );
-      await file.writeAsString(
-        const JsonEncoder.withIndent('  ').convert(sorted),
-        encoding: utf8,
-      );
+      final sorted = Map.fromEntries(_memory.entries.toList()..sort((a, b) => a.key.compareTo(b.key)));
+      await file.writeAsString(const JsonEncoder.withIndent('  ').convert(sorted), encoding: utf8);
     } catch (e) {
       debugPrint('[MerchantMemory] Erreur sauvegarde : $e');
     }
   }
 
-  static String _normalize(String name) => name
-      .toLowerCase()
-      .trim()
-      .replaceAll(RegExp(r'\s+'), ' ')
-      .replaceAll(RegExp(r'\s+\d+$'), '');
+  static String _normalize(String name) =>
+      name.toLowerCase().trim().replaceAll(RegExp(r'\s+'), ' ').replaceAll(RegExp(r'\s+\d+$'), '');
 }

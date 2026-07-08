@@ -6,10 +6,7 @@ import '../models/expense.dart';
 
 class CsvExportService {
   /// Génère le contenu CSV en utilisant les noms de colonnes configurés dans Notion.
-  static String generateCsvContent(
-    List<Expense> expenses,
-    NotionColumns columns,
-  ) {
+  static String generateCsvContent(List<Expense> expenses, NotionColumns columns) {
     final rows = <List<dynamic>>[
       [columns.name, columns.date, columns.amount, columns.category, columns.paymentMethod],
     ];
@@ -27,16 +24,10 @@ class CsvExportService {
   }
 
   /// Sauvegarde le CSV dans le fichier indiqué.
-  static Future<void> saveToFile(
-    List<Expense> expenses,
-    String filePath,
-    NotionColumns columns,
-  ) async {
+  static Future<void> saveToFile(List<Expense> expenses, String filePath, NotionColumns columns) async {
     final content = generateCsvContent(expenses, columns);
     await File(filePath).writeAsString(content);
   }
 
-  static String _formatAmount(double amount) =>
-      NumberFormat('#0.00', 'fr_FR').format(amount);
+  static String _formatAmount(double amount) => NumberFormat('#0.00', 'fr_FR').format(amount);
 }
-

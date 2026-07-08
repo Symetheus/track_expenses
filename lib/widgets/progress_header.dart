@@ -5,11 +5,7 @@ class ProgressHeader extends StatelessWidget {
   final int reviewed;
   final int total;
 
-  const ProgressHeader({
-    super.key,
-    required this.reviewed,
-    required this.total,
-  });
+  const ProgressHeader({super.key, required this.reviewed, required this.total});
 
   @override
   Widget build(BuildContext context) {
@@ -18,8 +14,7 @@ class ProgressHeader extends StatelessWidget {
     final isComplete = reviewed == total && total > 0;
 
     return Container(
-      padding: const EdgeInsets.symmetric(
-          horizontal: Dimens.spaceXxl, vertical: Dimens.spaceL),
+      padding: const EdgeInsets.symmetric(horizontal: Dimens.spaceXxl, vertical: Dimens.spaceL),
       decoration: BoxDecoration(
         color: colorScheme.surfaceContainer,
         border: Border(bottom: BorderSide(color: colorScheme.outlineVariant)),
@@ -35,9 +30,9 @@ class ProgressHeader extends StatelessWidget {
                     Text(
                       isComplete ? '✅ Tout est révisé !' : '$reviewed / $total dépenses révisées',
                       style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: isComplete ? Colors.green.shade700 : null,
-                          ),
+                        fontWeight: FontWeight.bold,
+                        color: isComplete ? Colors.green.shade700 : null,
+                      ),
                     ),
                   ],
                 ),
@@ -48,9 +43,7 @@ class ProgressHeader extends StatelessWidget {
                     value: progress,
                     minHeight: Dimens.progressBarHeight,
                     backgroundColor: colorScheme.surfaceContainerHighest,
-                    valueColor: AlwaysStoppedAnimation(
-                      isComplete ? Colors.green : colorScheme.primary,
-                    ),
+                    valueColor: AlwaysStoppedAnimation(isComplete ? Colors.green : colorScheme.primary),
                   ),
                 ),
               ],
@@ -60,9 +53,9 @@ class ProgressHeader extends StatelessWidget {
           Text(
             '${(progress * 100).toInt()}%',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: isComplete ? Colors.green.shade700 : colorScheme.primary,
-                ),
+              fontWeight: FontWeight.bold,
+              color: isComplete ? Colors.green.shade700 : colorScheme.primary,
+            ),
           ),
         ],
       ),

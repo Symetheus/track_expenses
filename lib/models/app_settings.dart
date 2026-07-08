@@ -13,13 +13,7 @@ class NotionColumns {
     this.paymentMethod = 'Moyen de paiement',
   });
 
-  NotionColumns copyWith({
-    String? name,
-    String? date,
-    String? amount,
-    String? category,
-    String? paymentMethod,
-  }) {
+  NotionColumns copyWith({String? name, String? date, String? amount, String? category, String? paymentMethod}) {
     return NotionColumns(
       name: name ?? this.name,
       date: date ?? this.date,
@@ -43,9 +37,9 @@ class AppSettings {
     NotionColumns? notionColumns,
     List<String>? categories,
     List<String>? paymentMethods,
-  })  : notionColumns = notionColumns ?? const NotionColumns(),
-        categories = categories ?? defaultCategories,
-        paymentMethods = paymentMethods ?? defaultPaymentMethods;
+  }) : notionColumns = notionColumns ?? const NotionColumns(),
+       categories = categories ?? defaultCategories,
+       paymentMethods = paymentMethods ?? defaultPaymentMethods;
 
   static const List<String> defaultCategories = [
     'Loyer',
@@ -60,16 +54,9 @@ class AppSettings {
     'Voyage',
   ];
 
-  static const List<String> defaultPaymentMethods = [
-    'Carte bancaire',
-    'Virement',
-    'Prélèvement',
-    'Espèces',
-    'Chèque',
-  ];
+  static const List<String> defaultPaymentMethods = ['Carte bancaire', 'Virement', 'Prélèvement', 'Espèces', 'Chèque'];
 
-  bool get isNotionConfigured =>
-      notionToken.isNotEmpty && notionDatabaseId.isNotEmpty;
+  bool get isNotionConfigured => notionToken.isNotEmpty && notionDatabaseId.isNotEmpty;
 
   AppSettings copyWith({
     String? notionToken,

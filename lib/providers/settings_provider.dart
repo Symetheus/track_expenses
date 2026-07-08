@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:flutter/foundation.dart';
 import '../models/app_settings.dart';
 import '../utils/project_path.dart';
@@ -29,10 +28,7 @@ class SettingsProvider extends ChangeNotifier {
         'categories': _settings.categories,
         'payment_methods': _settings.paymentMethods,
       };
-      await file.writeAsString(
-        const JsonEncoder.withIndent('  ').convert(data),
-        encoding: utf8,
-      );
+      await file.writeAsString(const JsonEncoder.withIndent('  ').convert(data), encoding: utf8);
     } catch (e) {
       debugPrint('[Settings] Erreur sauvegarde : $e');
     }
@@ -49,10 +45,10 @@ class SettingsProvider extends ChangeNotifier {
           notionToken: data['notion_token'] as String? ?? '',
           notionDatabaseId: data['notion_database_id'] as String? ?? '',
           notionColumns: NotionColumns(
-            name:          cols['name']           as String? ?? 'Dépense',
-            date:          cols['date']           as String? ?? 'Date',
-            amount:        cols['amount']         as String? ?? 'Montant',
-            category:      cols['category']       as String? ?? 'Catégorie',
+            name: cols['name'] as String? ?? 'Dépense',
+            date: cols['date'] as String? ?? 'Date',
+            amount: cols['amount'] as String? ?? 'Montant',
+            category: cols['category'] as String? ?? 'Catégorie',
             paymentMethod: cols['payment_method'] as String? ?? 'Moyen de paiement',
           ),
           categories: (data['categories'] as List?)?.cast<String>() ?? AppSettings.defaultCategories,
@@ -86,9 +82,7 @@ class SettingsProvider extends ChangeNotifier {
   }
 
   Future<void> removeCategory(String category) async {
-    _settings = _settings.copyWith(
-      categories: _settings.categories.where((c) => c != category).toList(),
-    );
+    _settings = _settings.copyWith(categories: _settings.categories.where((c) => c != category).toList());
     await _persist();
     notifyListeners();
   }
