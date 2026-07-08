@@ -1,4 +1,4 @@
-name: expenses_csv_to_notion
+name: track_expenses
 description: "Middleware pour importer les dépenses SG vers Notion."
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
